@@ -1,0 +1,48 @@
+name: financial_freedom
+description: Personal Financial Freedom Compass - Keluar dari ketergantungan gaji dan meraih kedaulatan waktu.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_bloc: ^8.1.3
+  equatable: ^2.0.5
+
+  # Dependency Injection
+  get_it: ^7.6.4
+  injectable: ^2.3.2
+
+  # Database - Encrypted SQLite (Offline-First)
+  drift: ^2.14.1
+  sqlite3_flutter_libs: ^0.5.18
+  sqlcipher_flutter_libs: ^0.6.3  # Encrypted SQLite
+  path_provider: ^2.1.1
+  path: ^1.8.3
+
+  # Functional Programming
+  dartz: ^0.10.1
+
+  # Date/Time
+  intl: ^0.18.1
+
+  # Backup & Security
+  encrypt: ^5.0.3
+  flutter_secure_storage: ^9.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  build_runner: ^2.4.7
+  drift_dev: ^2.14.1
+  injectable_generator: ^2.4.1
+  mocktail: ^1.0.1
+
+flutter:
+  uses-material-design: true
