@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:financial_freedom/domain/entities/exit_simulation_result.dart';
 import 'package:financial_freedom/ui/bloc/exit_simulator/exit_simulator.dart';
 
 /// Reflection View - Final page with insights and wisdom

@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:financial_freedom/core/database/app_database.dart';
+import 'package:financial_freedom/core/database/app_database.dart' hide FinancialSnapshot;
 import 'package:financial_freedom/core/errors/failures.dart';
-import 'package:financial_freedom/core/errors/exceptions.dart';
 import 'package:financial_freedom/data/mappers/financial_snapshot_mapper.dart';
 import 'package:financial_freedom/domain/entities/financial_snapshot.dart';
 import 'package:financial_freedom/domain/repositories/financial_repository.dart';

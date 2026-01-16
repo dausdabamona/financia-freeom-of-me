@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:dartz/dartz.dart';
 import 'package:financial_freedom/core/di/injection.dart';
 import 'package:financial_freedom/domain/repositories/account_repository.dart';
 import 'package:financial_freedom/ui/bloc/compass/compass.dart';
@@ -66,21 +67,24 @@ class _AppEntryPointState extends State<AppEntryPoint> {
   }
 
   Future<void> _checkFirstTimeUser() async {
-    try {
-      final accountRepo = getIt<AccountRepository>();
-      final accounts = await accountRepo.getAllAccounts();
+    final accountRepo = getIt<AccountRepository>();
+    final accountsResult = await accountRepo.getAllAccounts();
 
-      setState(() {
-        _isFirstTimeUser = accounts.isEmpty;
-        _isLoading = false;
-      });
-    } catch (e) {
-      // If error, assume first time user
-      setState(() {
-        _isFirstTimeUser = true;
-        _isLoading = false;
-      });
-    }
+    accountsResult.fold(
+      (failure) {
+        // If error, assume first time user
+        setState(() {
+          _isFirstTimeUser = true;
+          _isLoading = false;
+        });
+      },
+      (accounts) {
+        setState(() {
+          _isFirstTimeUser = accounts.isEmpty;
+          _isLoading = false;
+        });
+      },
+    );
   }
 
   void _navigateToOnboarding() async {

@@ -28,6 +28,9 @@ dependencies:
   # Functional Programming
   dartz: ^0.10.1
 
+  # UUID Generation
+  uuid: ^4.2.1
+
   # Date/Time
   intl: ^0.18.1
 
