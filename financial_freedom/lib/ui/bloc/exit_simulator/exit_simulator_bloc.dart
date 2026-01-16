@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:financial_freedom/core/services/scenario_engine.dart';
 import 'package:financial_freedom/data/repositories/financial_data_repository_impl.dart';
-import 'package:financial_freedom/domain/entities/exit_scenario.dart';
 import 'package:financial_freedom/domain/entities/exit_simulation_result.dart';
 
 part 'exit_simulator_event.dart';

@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:drift/drift.dart';
 import 'package:financial_freedom/core/database/app_database.dart';
-import 'package:financial_freedom/core/database/tables/accounts_table.dart' as tables;
 import 'package:financial_freedom/core/errors/failures.dart';
 import 'package:financial_freedom/domain/entities/account.dart' as domain;
 import 'package:financial_freedom/domain/repositories/account_repository.dart';
