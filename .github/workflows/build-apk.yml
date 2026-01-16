@@ -46,6 +46,143 @@ jobs:
         echo "sdk.dir=$ANDROID_HOME" > android/local.properties
         echo "flutter.sdk=$FLUTTER_ROOT" >> android/local.properties
 
+    - name: Configure Android Gradle for SDK 35 and Kotlin 1.9
+      working-directory: financial_freedom/android
+      run: |
+        # Update settings.gradle with modern Flutter plugin setup and Kotlin 1.9.24
+        cat > settings.gradle << 'EOF'
+        pluginManagement {
+            def flutterSdkPath = {
+                def properties = new Properties()
+                file("local.properties").withInputStream { properties.load(it) }
+                def flutterSdkPath = properties.getProperty("flutter.sdk")
+                assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
+                return flutterSdkPath
+            }()
+
+            includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
+
+            repositories {
+                google()
+                mavenCentral()
+                gradlePluginPortal()
+            }
+        }
+
+        plugins {
+            id "dev.flutter.flutter-plugin-loader" version "1.0.0"
+            id "com.android.application" version "8.1.0" apply false
+            id "org.jetbrains.kotlin.android" version "1.9.24" apply false
+        }
+
+        include ':app'
+        EOF
+
+        # Update root build.gradle with Kotlin version and subproject config
+        cat > build.gradle << 'EOF'
+        buildscript {
+            ext.kotlin_version = '1.9.24'
+        }
+
+        allprojects {
+            repositories {
+                google()
+                mavenCentral()
+            }
+        }
+
+        rootProject.buildDir = '../build'
+        subprojects {
+            project.buildDir = "${rootProject.buildDir}/${project.name}"
+        }
+        subprojects {
+            project.evaluationDependsOn(':app')
+        }
+
+        subprojects {
+            afterEvaluate { project ->
+                if (project.hasProperty('android')) {
+                    project.android {
+                        if (namespace == null) {
+                            namespace = project.group.toString()
+                        }
+                        compileSdkVersion 35
+                    }
+                }
+            }
+        }
+
+        tasks.register("clean", Delete) {
+            delete rootProject.buildDir
+        }
+        EOF
+
+        # Update app/build.gradle with compileSdk 35, Kotlin 1.9, and Java 17
+        cat > app/build.gradle << 'EOF'
+        plugins {
+            id "com.android.application"
+            id "org.jetbrains.kotlin.android"
+            id "dev.flutter.flutter-gradle-plugin"
+        }
+
+        def localProperties = new Properties()
+        def localPropertiesFile = rootProject.file('local.properties')
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.withReader('UTF-8') { reader ->
+                localProperties.load(reader)
+            }
+        }
+
+        def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+        if (flutterVersionCode == null) {
+            flutterVersionCode = '1'
+        }
+
+        def flutterVersionName = localProperties.getProperty('flutter.versionName')
+        if (flutterVersionName == null) {
+            flutterVersionName = '1.0'
+        }
+
+        android {
+            namespace "com.example.financial_freedom"
+            compileSdk 35
+            ndkVersion flutter.ndkVersion
+
+            compileOptions {
+                sourceCompatibility JavaVersion.VERSION_17
+                targetCompatibility JavaVersion.VERSION_17
+            }
+
+            kotlinOptions {
+                jvmTarget = '17'
+            }
+
+            sourceSets {
+                main.java.srcDirs += 'src/main/kotlin'
+            }
+
+            defaultConfig {
+                applicationId "com.example.financial_freedom"
+                minSdk 21
+                targetSdk 35
+                versionCode flutterVersionCode.toInteger()
+                versionName flutterVersionName
+            }
+
+            buildTypes {
+                release {
+                    signingConfig signingConfigs.debug
+                }
+            }
+        }
+
+        flutter {
+            source '../..'
+        }
+
+        dependencies {}
+        EOF
+
     - name: Get dependencies
       working-directory: financial_freedom
       run: flutter pub get
