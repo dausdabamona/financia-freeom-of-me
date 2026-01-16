@@ -210,7 +210,7 @@ class _AccountTile extends StatelessWidget {
               icon: const Icon(Icons.delete_outline, color: Colors.red),
               onPressed: () {
                 context.read<AccountSetupBloc>().add(
-                      RemoveAccountEvent(accountId: account.id),
+                      RemoveAccountEvent(account.id),
                     );
               },
             ),

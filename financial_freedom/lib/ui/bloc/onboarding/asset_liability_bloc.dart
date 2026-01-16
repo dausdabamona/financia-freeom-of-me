@@ -196,7 +196,7 @@ class AssetLiabilityBloc extends Bloc<AssetLiabilityEvent, AssetLiabilityState> 
     on<AddLiabilityEvent>(_onAddLiability);
     on<RemoveLiabilityEvent>(_onRemoveLiability);
     on<FinishAssetLiabilitySetupEvent>(_onFinishSetup);
-    on<FinishAssetLiabilityEvent>(_onFinishSetup);
+    on<FinishAssetLiabilityEvent>(_onFinishAssetLiability);
   }
 
   Future<void> _onLoad(
@@ -371,6 +371,19 @@ class AssetLiabilityBloc extends Bloc<AssetLiabilityEvent, AssetLiabilityState> 
 
   Future<void> _onFinishSetup(
     FinishAssetLiabilitySetupEvent event,
+    Emitter<AssetLiabilityState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is! AssetLiabilityReady) return;
+
+    emit(AssetLiabilityCompleted(
+      assets: currentState.assets,
+      liabilities: currentState.liabilities,
+    ));
+  }
+
+  Future<void> _onFinishAssetLiability(
+    FinishAssetLiabilityEvent event,
     Emitter<AssetLiabilityState> emit,
   ) async {
     final currentState = state;

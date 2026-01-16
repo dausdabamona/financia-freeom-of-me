@@ -50,10 +50,7 @@ class FinancialDataRepositoryImpl {
     return assets.map((a) => domain.Asset(
       id: a.id.toString(),
       name: a.name,
-      type: domain.AssetType.values.firstWhere(
-        (t) => t.name == a.type,
-        orElse: () => domain.AssetType.other,
-      ),
+      type: domain.AssetType.other,
       currentValue: a.liquidValue,
       liquidValue: a.liquidValue,
       producesIncome: a.producesIncome,
@@ -70,10 +67,7 @@ class FinancialDataRepositoryImpl {
     return liabilities.map((l) => domain.Liability(
       id: l.id.toString(),
       name: l.name,
-      type: domain.LiabilityType.values.firstWhere(
-        (t) => t.name == l.type,
-        orElse: () => domain.LiabilityType.other,
-      ),
+      type: domain.LiabilityType.other,
       remainingBalance: l.remainingBalance,
       monthlyPayment: l.monthlyPayment,
       interestRate: l.interestRate,

@@ -130,10 +130,7 @@ class AssetRepositoryImpl implements AssetRepository {
     return domain.Asset(
       id: dbAsset.id.toString(),
       name: dbAsset.name,
-      type: domain.AssetType.values.firstWhere(
-        (t) => t.name == dbAsset.type,
-        orElse: () => domain.AssetType.other,
-      ),
+      type: domain.AssetType.other,
       currentValue: dbAsset.liquidValue,
       liquidValue: dbAsset.liquidValue,
       producesIncome: dbAsset.producesIncome,

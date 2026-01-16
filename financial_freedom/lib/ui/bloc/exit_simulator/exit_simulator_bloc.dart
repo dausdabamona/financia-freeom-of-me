@@ -84,13 +84,7 @@ class ExitSimulatorBloc extends Bloc<ExitSimulatorEvent, ExitSimulatorState> {
       // Calculate monthly burn rate from baseline
       double monthlyBurnRate = 0;
       if (baseline != null) {
-        monthlyBurnRate = baseline.housing +
-            baseline.food +
-            baseline.transport +
-            baseline.utilities +
-            baseline.health +
-            baseline.debtPayments +
-            baseline.other;
+        monthlyBurnRate = baseline.totalBaseline;
       }
 
       // Calculate passive income

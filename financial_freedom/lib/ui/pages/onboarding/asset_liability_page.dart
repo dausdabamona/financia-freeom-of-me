@@ -210,7 +210,7 @@ class _AssetTile extends StatelessWidget {
               icon: const Icon(Icons.delete_outline, color: Colors.red),
               onPressed: () {
                 context.read<AssetLiabilityBloc>().add(
-                      RemoveAssetEvent(assetId: asset.id),
+                      RemoveAssetEvent(asset.id),
                     );
               },
             ),
@@ -254,12 +254,14 @@ class _AddAssetFormState extends State<_AddAssetForm> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
+      final monthlyIncome = double.tryParse(_incomeController.text) ?? 0;
       context.read<AssetLiabilityBloc>().add(
             AddAssetEvent(
               name: _nameController.text.trim(),
               type: _selectedType,
-              currentValue: double.tryParse(_valueController.text) ?? 0,
-              monthlyIncome: double.tryParse(_incomeController.text) ?? 0,
+              liquidValue: double.tryParse(_valueController.text) ?? 0,
+              producesIncome: monthlyIncome > 0,
+              monthlyIncome: monthlyIncome,
             ),
           );
 
@@ -425,7 +427,7 @@ class _LiabilityTile extends StatelessWidget {
               icon: const Icon(Icons.delete_outline, color: Colors.red),
               onPressed: () {
                 context.read<AssetLiabilityBloc>().add(
-                      RemoveLiabilityEvent(liabilityId: liability.id),
+                      RemoveLiabilityEvent(liability.id),
                     );
               },
             ),
