@@ -8,3 +8,4 @@ export 'financial_snapshot_dao.dart';
 export 'liability_dao.dart';
 export 'monthly_baseline_dao.dart';
 export 'transaction_dao.dart';
+export 'time_profile_dao.dart';

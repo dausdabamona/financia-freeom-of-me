@@ -16,6 +16,7 @@ import 'package:financial_freedom/core/database/daos/liability_dao.dart';
 import 'package:financial_freedom/core/database/daos/monthly_baseline_dao.dart';
 import 'package:financial_freedom/core/database/daos/financial_snapshot_dao.dart';
 import 'package:financial_freedom/core/database/daos/daily_compass_dao.dart';
+import 'package:financial_freedom/core/database/daos/time_profile_dao.dart';
 
 part 'app_database.g.dart';
 
@@ -26,6 +27,7 @@ part 'app_database.g.dart';
 ///
 /// Schema Version History:
 /// - v1: Initial schema with all Reality Engine tables
+/// - v2: Added TimeProfiles table for time freedom tracking
 @DriftDatabase(
   tables: [
     Accounts,
@@ -35,6 +37,7 @@ part 'app_database.g.dart';
     MonthlyBaselines,
     FinancialSnapshots,
     DailyCompass,
+    TimeProfiles,
   ],
   daos: [
     AccountDao,
@@ -44,13 +47,14 @@ part 'app_database.g.dart';
     MonthlyBaselineDao,
     FinancialSnapshotDao,
     DailyCompassDao,
+    TimeProfileDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   // Lazy-initialized DAOs
   late final accountDao = AccountDao(this);
@@ -60,6 +64,7 @@ class AppDatabase extends _$AppDatabase {
   late final monthlyBaselineDao = MonthlyBaselineDao(this);
   late final financialSnapshotDao = FinancialSnapshotDao(this);
   late final dailyCompassDao = DailyCompassDao(this);
+  late final timeProfileDao = TimeProfileDao(this);
 
   /// Creates an encrypted database instance.
   /// Encryption key is stored securely in device keychain.
@@ -130,10 +135,9 @@ class AppDatabase extends _$AppDatabase {
       },
       onUpgrade: (Migrator m, int from, int to) async {
         // Handle migrations here as schema evolves
-        // Example:
-        // if (from < 2) {
-        //   await m.addColumn(accounts, accounts.someNewColumn);
-        // }
+        if (from < 2) {
+          await m.createTable(timeProfiles);
+        }
       },
       beforeOpen: (details) async {
         // Enable foreign keys
