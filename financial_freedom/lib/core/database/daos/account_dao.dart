@@ -24,13 +24,13 @@ class AccountDao extends DatabaseAccessor<AppDatabase> with _$AccountDaoMixin {
   /// Get total balance of all liquid accounts
   Future<double> getTotalLiquidBalance() async {
     final liquidAccounts = await getLiquidAccounts();
-    return liquidAccounts.fold(0.0, (sum, account) => sum + account.balance);
+    return liquidAccounts.fold<double>(0.0, (sum, account) => sum + account.balance);
   }
 
   /// Get total balance of all accounts
   Future<double> getTotalBalance() async {
     final allAccounts = await getAllAccounts();
-    return allAccounts.fold(0.0, (sum, account) => sum + account.balance);
+    return allAccounts.fold<double>(0.0, (sum, account) => sum + account.balance);
   }
 
   /// Insert a new account

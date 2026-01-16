@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dartz/dartz.dart';
+import 'package:dartz/dartz.dart' hide State;
 import 'package:financial_freedom/core/di/injection.dart';
 import 'package:financial_freedom/domain/repositories/account_repository.dart';
 import 'package:financial_freedom/ui/bloc/compass/compass.dart';

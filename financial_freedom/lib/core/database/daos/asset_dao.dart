@@ -24,13 +24,13 @@ class AssetDao extends DatabaseAccessor<AppDatabase> with _$AssetDaoMixin {
   /// Get total liquid value of all assets
   Future<double> getTotalLiquidValue() async {
     final allAssets = await getAllAssets();
-    return allAssets.fold(0.0, (sum, asset) => sum + asset.liquidValue);
+    return allAssets.fold<double>(0.0, (sum, asset) => sum + asset.liquidValue);
   }
 
   /// Get total monthly passive income from assets
   Future<double> getTotalMonthlyPassiveIncome() async {
     final incomeAssets = await getIncomeProducingAssets();
-    return incomeAssets.fold(0.0, (sum, asset) => sum + asset.monthlyIncome);
+    return incomeAssets.fold<double>(0.0, (sum, asset) => sum + asset.monthlyIncome);
   }
 
   /// Insert a new asset

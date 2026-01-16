@@ -21,14 +21,14 @@ class LiabilityDao extends DatabaseAccessor<AppDatabase>
   /// Get total remaining balance of all liabilities
   Future<double> getTotalRemainingBalance() async {
     final allLiabilities = await getAllLiabilities();
-    return allLiabilities.fold(
+    return allLiabilities.fold<double>(
         0.0, (sum, liability) => sum + liability.remainingBalance);
   }
 
   /// Get total monthly payment of all liabilities
   Future<double> getTotalMonthlyPayment() async {
     final allLiabilities = await getAllLiabilities();
-    return allLiabilities.fold(
+    return allLiabilities.fold<double>(
         0.0, (sum, liability) => sum + liability.monthlyPayment);
   }
 

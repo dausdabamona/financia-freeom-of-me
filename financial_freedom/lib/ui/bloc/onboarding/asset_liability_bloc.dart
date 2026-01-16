@@ -18,8 +18,21 @@ class LoadAssetsLiabilitiesEvent extends AssetLiabilityEvent {
   const LoadAssetsLiabilitiesEvent();
 }
 
+class LoadAssetsEvent extends AssetLiabilityEvent {
+  const LoadAssetsEvent();
+}
+
+class LoadLiabilitiesEvent extends AssetLiabilityEvent {
+  const LoadLiabilitiesEvent();
+}
+
+class FinishAssetLiabilityEvent extends AssetLiabilityEvent {
+  const FinishAssetLiabilityEvent();
+}
+
 class AddAssetEvent extends AssetLiabilityEvent {
   final String name;
+  final AssetType type;
   final double liquidValue;
   final bool producesIncome;
   final double monthlyIncome;
@@ -27,6 +40,7 @@ class AddAssetEvent extends AssetLiabilityEvent {
 
   const AddAssetEvent({
     required this.name,
+    required this.type,
     required this.liquidValue,
     required this.producesIncome,
     required this.monthlyIncome,
@@ -34,7 +48,7 @@ class AddAssetEvent extends AssetLiabilityEvent {
   });
 
   @override
-  List<Object?> get props => [name, liquidValue, producesIncome, monthlyIncome, notes];
+  List<Object?> get props => [name, type, liquidValue, producesIncome, monthlyIncome, notes];
 }
 
 class RemoveAssetEvent extends AssetLiabilityEvent {
@@ -48,6 +62,7 @@ class RemoveAssetEvent extends AssetLiabilityEvent {
 
 class AddLiabilityEvent extends AssetLiabilityEvent {
   final String name;
+  final LiabilityType type;
   final double remainingBalance;
   final double monthlyPayment;
   final double? interestRate;
@@ -55,6 +70,7 @@ class AddLiabilityEvent extends AssetLiabilityEvent {
 
   const AddLiabilityEvent({
     required this.name,
+    required this.type,
     required this.remainingBalance,
     required this.monthlyPayment,
     this.interestRate,
@@ -62,7 +78,7 @@ class AddLiabilityEvent extends AssetLiabilityEvent {
   });
 
   @override
-  List<Object?> get props => [name, remainingBalance, monthlyPayment, interestRate, notes];
+  List<Object?> get props => [name, type, remainingBalance, monthlyPayment, interestRate, notes];
 }
 
 class RemoveLiabilityEvent extends AssetLiabilityEvent {
@@ -81,6 +97,18 @@ class FinishAssetLiabilitySetupEvent extends AssetLiabilityEvent {
 // States
 abstract class AssetLiabilityState extends Equatable {
   const AssetLiabilityState();
+
+  // Default getters for UI consumption
+  List<Asset> get assets => [];
+  List<Liability> get liabilities => [];
+  bool get isLoading => false;
+  double get totalAssetValue => assets.fold(0, (sum, a) => sum + a.liquidValue);
+  double get totalLiabilityBalance => liabilities.fold(0, (sum, l) => sum + l.remainingBalance);
+  double get totalMonthlyPassiveIncome =>
+      assets.where((a) => a.producesIncome).fold(0, (sum, a) => sum + a.monthlyIncome);
+  double get totalMonthlyDebtPayment => liabilities.fold(0, (sum, l) => sum + l.monthlyPayment);
+  double get netWorth => totalAssetValue - totalLiabilityBalance;
+
   @override
   List<Object?> get props => [];
 }
@@ -91,10 +119,15 @@ class AssetLiabilityInitial extends AssetLiabilityState {
 
 class AssetLiabilityLoading extends AssetLiabilityState {
   const AssetLiabilityLoading();
+
+  @override
+  bool get isLoading => true;
 }
 
 class AssetLiabilityReady extends AssetLiabilityState {
+  @override
   final List<Asset> assets;
+  @override
   final List<Liability> liabilities;
   final String? message;
 
@@ -104,12 +137,17 @@ class AssetLiabilityReady extends AssetLiabilityState {
     this.message,
   });
 
+  @override
   double get totalAssetValue => assets.fold(0, (sum, a) => sum + a.liquidValue);
+  @override
   double get totalMonthlyPassiveIncome =>
       assets.where((a) => a.producesIncome).fold(0, (sum, a) => sum + a.monthlyIncome);
-  double get totalLiabilities => liabilities.fold(0, (sum, l) => sum + l.remainingBalance);
+  @override
+  double get totalLiabilityBalance => liabilities.fold(0, (sum, l) => sum + l.remainingBalance);
+  @override
   double get totalMonthlyDebtPayment => liabilities.fold(0, (sum, l) => sum + l.monthlyPayment);
-  double get netWorth => totalAssetValue - totalLiabilities;
+  @override
+  double get netWorth => totalAssetValue - totalLiabilityBalance;
 
   @override
   List<Object?> get props => [assets, liabilities, message];
@@ -151,11 +189,14 @@ class AssetLiabilityBloc extends Bloc<AssetLiabilityEvent, AssetLiabilityState> 
     required this.liabilityRepository,
   }) : super(const AssetLiabilityInitial()) {
     on<LoadAssetsLiabilitiesEvent>(_onLoad);
+    on<LoadAssetsEvent>(_onLoadAssets);
+    on<LoadLiabilitiesEvent>(_onLoadLiabilities);
     on<AddAssetEvent>(_onAddAsset);
     on<RemoveAssetEvent>(_onRemoveAsset);
     on<AddLiabilityEvent>(_onAddLiability);
     on<RemoveLiabilityEvent>(_onRemoveLiability);
     on<FinishAssetLiabilitySetupEvent>(_onFinishSetup);
+    on<FinishAssetLiabilityEvent>(_onFinishSetup);
   }
 
   Future<void> _onLoad(
@@ -179,6 +220,22 @@ class AssetLiabilityBloc extends Bloc<AssetLiabilityEvent, AssetLiabilityState> 
         );
       },
     );
+  }
+
+  Future<void> _onLoadAssets(
+    LoadAssetsEvent event,
+    Emitter<AssetLiabilityState> emit,
+  ) async {
+    // Just redirect to full load
+    add(const LoadAssetsLiabilitiesEvent());
+  }
+
+  Future<void> _onLoadLiabilities(
+    LoadLiabilitiesEvent event,
+    Emitter<AssetLiabilityState> emit,
+  ) async {
+    // Just redirect to full load
+    add(const LoadAssetsLiabilitiesEvent());
   }
 
   Future<void> _onAddAsset(

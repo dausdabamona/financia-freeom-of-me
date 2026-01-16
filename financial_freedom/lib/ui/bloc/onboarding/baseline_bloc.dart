@@ -36,9 +36,48 @@ class FinishBaselineSetupEvent extends BaselineEvent {
   const FinishBaselineSetupEvent();
 }
 
+class SaveBaselineEvent extends BaselineEvent {
+  const SaveBaselineEvent();
+}
+
+class UpdateBaselineEvent extends BaselineEvent {
+  final double housing;
+  final double food;
+  final double transport;
+  final double health;
+  final double utilities;
+  final double debtPayments;
+  final double other;
+
+  const UpdateBaselineEvent({
+    required this.housing,
+    required this.food,
+    required this.transport,
+    required this.health,
+    required this.utilities,
+    required this.debtPayments,
+    required this.other,
+  });
+
+  @override
+  List<Object?> get props => [housing, food, transport, health, utilities, debtPayments, other];
+}
+
 // States
 abstract class BaselineState extends Equatable {
   const BaselineState();
+
+  // Default getters for UI consumption
+  double get housing => 0;
+  double get food => 0;
+  double get transport => 0;
+  double get health => 0;
+  double get utilities => 0;
+  double get debtPayments => 0;
+  double get other => 0;
+  double get totalBaseline => housing + food + transport + health + utilities + debtPayments + other;
+  bool get isLoading => false;
+
   @override
   List<Object?> get props => [];
 }
@@ -49,6 +88,42 @@ class BaselineInitial extends BaselineState {
 
 class BaselineLoading extends BaselineState {
   const BaselineLoading();
+
+  @override
+  bool get isLoading => true;
+}
+
+class BaselineEditing extends BaselineState {
+  @override
+  final double housing;
+  @override
+  final double food;
+  @override
+  final double transport;
+  @override
+  final double health;
+  @override
+  final double utilities;
+  @override
+  final double debtPayments;
+  @override
+  final double other;
+
+  const BaselineEditing({
+    required this.housing,
+    required this.food,
+    required this.transport,
+    required this.health,
+    required this.utilities,
+    required this.debtPayments,
+    required this.other,
+  });
+
+  @override
+  double get totalBaseline => housing + food + transport + health + utilities + debtPayments + other;
+
+  @override
+  List<Object?> get props => [housing, food, transport, health, utilities, debtPayments, other];
 }
 
 class BaselineReady extends BaselineState {
@@ -95,6 +170,8 @@ class BaselineBloc extends Bloc<BaselineEvent, BaselineState> {
   }) : super(const BaselineInitial()) {
     on<LoadBaselineEvent>(_onLoadBaseline);
     on<SaveBaselineDataEvent>(_onSaveBaseline);
+    on<UpdateBaselineEvent>(_onUpdateBaseline);
+    on<SaveBaselineEvent>(_onSaveBaselineFromState);
     on<FinishBaselineSetupEvent>(_onFinishSetup);
   }
 
@@ -127,6 +204,61 @@ class BaselineBloc extends Bloc<BaselineEvent, BaselineState> {
     await result.fold(
       (failure) async {
         emit(BaselineReady(message: failure.message));
+      },
+      (_) async {
+        final baselineResult = await baselineRepository.getLatestBaseline();
+        baselineResult.fold(
+          (failure) => emit(BaselineError(failure.message)),
+          (baseline) => emit(BaselineReady(
+            baseline: baseline,
+            message: 'Baseline berhasil disimpan',
+          )),
+        );
+      },
+    );
+  }
+
+  void _onUpdateBaseline(
+    UpdateBaselineEvent event,
+    Emitter<BaselineState> emit,
+  ) {
+    emit(BaselineEditing(
+      housing: event.housing,
+      food: event.food,
+      transport: event.transport,
+      health: event.health,
+      utilities: event.utilities,
+      debtPayments: event.debtPayments,
+      other: event.other,
+    ));
+  }
+
+  Future<void> _onSaveBaselineFromState(
+    SaveBaselineEvent event,
+    Emitter<BaselineState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is! BaselineEditing) return;
+
+    emit(const BaselineLoading());
+
+    final result = await saveBaseline(SaveBaselineParams(
+      essentialCost: currentState.housing + currentState.food + currentState.transport + currentState.health + currentState.utilities,
+      optionalCost: currentState.other,
+      safetyBuffer: currentState.debtPayments,
+    ));
+
+    await result.fold(
+      (failure) async {
+        emit(BaselineEditing(
+          housing: currentState.housing,
+          food: currentState.food,
+          transport: currentState.transport,
+          health: currentState.health,
+          utilities: currentState.utilities,
+          debtPayments: currentState.debtPayments,
+          other: currentState.other,
+        ));
       },
       (_) async {
         final baselineResult = await baselineRepository.getLatestBaseline();

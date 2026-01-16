@@ -58,6 +58,7 @@ class SaveAsset extends UseCase<void, SaveAssetParams> {
     final asset = Asset(
       id: now.millisecondsSinceEpoch.toString(),
       name: params.name.trim(),
+      currentValue: params.liquidValue,
       liquidValue: params.liquidValue,
       producesIncome: params.producesIncome,
       monthlyIncome: params.producesIncome ? params.monthlyIncome : 0,

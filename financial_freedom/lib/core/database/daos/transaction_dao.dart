@@ -49,7 +49,7 @@ class TransactionDao extends DatabaseAccessor<AppDatabase>
     final transactions = await getTransactionsForMonth(month);
     return transactions
         .where((t) => t.type == TransactionType.income)
-        .fold(0.0, (sum, t) => sum + t.amount);
+        .fold<double>(0.0, (sum, t) => sum + t.amount);
   }
 
   /// Get total expenses for a month
@@ -57,7 +57,7 @@ class TransactionDao extends DatabaseAccessor<AppDatabase>
     final transactions = await getTransactionsForMonth(month);
     return transactions
         .where((t) => t.type == TransactionType.expense)
-        .fold(0.0, (sum, t) => sum + t.amount);
+        .fold<double>(0.0, (sum, t) => sum + t.amount);
   }
 
   /// Get salary income for a month
@@ -67,7 +67,7 @@ class TransactionDao extends DatabaseAccessor<AppDatabase>
         .where((t) =>
             t.type == TransactionType.income &&
             t.category == IncomeCategory.salary)
-        .fold(0.0, (sum, t) => sum + t.amount);
+        .fold<double>(0.0, (sum, t) => sum + t.amount);
   }
 
   /// Get passive income for a month
@@ -77,7 +77,7 @@ class TransactionDao extends DatabaseAccessor<AppDatabase>
         .where((t) =>
             t.type == TransactionType.income &&
             IncomeCategory.passiveCategories.contains(t.category))
-        .fold(0.0, (sum, t) => sum + t.amount);
+        .fold<double>(0.0, (sum, t) => sum + t.amount);
   }
 
   /// Get essential expenses for a month
@@ -87,7 +87,7 @@ class TransactionDao extends DatabaseAccessor<AppDatabase>
         .where((t) =>
             t.type == TransactionType.expense &&
             ExpenseCategory.essentialCategories.contains(t.category))
-        .fold(0.0, (sum, t) => sum + t.amount);
+        .fold<double>(0.0, (sum, t) => sum + t.amount);
   }
 
   /// Get optional expenses for a month
@@ -97,7 +97,7 @@ class TransactionDao extends DatabaseAccessor<AppDatabase>
         .where((t) =>
             t.type == TransactionType.expense &&
             ExpenseCategory.optionalCategories.contains(t.category))
-        .fold(0.0, (sum, t) => sum + t.amount);
+        .fold<double>(0.0, (sum, t) => sum + t.amount);
   }
 
   /// Insert a new transaction

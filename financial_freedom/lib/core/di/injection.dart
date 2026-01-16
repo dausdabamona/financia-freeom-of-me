@@ -121,24 +121,24 @@ Future<void> configureDependencies() async {
     ),
   );
 
-  getIt.registerLazySingleton<SaveAccountUseCase>(
-    () => SaveAccountUseCase(getIt<AccountRepository>()),
+  getIt.registerLazySingleton<SaveAccount>(
+    () => SaveAccount(getIt<AccountRepository>()),
   );
 
-  getIt.registerLazySingleton<SaveBaselineUseCase>(
-    () => SaveBaselineUseCase(getIt<MonthlyBaselineRepository>()),
+  getIt.registerLazySingleton<SaveBaseline>(
+    () => SaveBaseline(getIt<MonthlyBaselineRepository>()),
   );
 
-  getIt.registerLazySingleton<SaveAssetUseCase>(
-    () => SaveAssetUseCase(getIt<AssetRepository>()),
+  getIt.registerLazySingleton<SaveAsset>(
+    () => SaveAsset(getIt<AssetRepository>()),
   );
 
-  getIt.registerLazySingleton<SaveLiabilityUseCase>(
-    () => SaveLiabilityUseCase(getIt<LiabilityRepository>()),
+  getIt.registerLazySingleton<SaveLiability>(
+    () => SaveLiability(getIt<LiabilityRepository>()),
   );
 
-  getIt.registerLazySingleton<SaveTimeProfileUseCase>(
-    () => SaveTimeProfileUseCase(getIt<TimeProfileRepository>()),
+  getIt.registerLazySingleton<SaveTimeProfile>(
+    () => SaveTimeProfile(getIt<TimeProfileRepository>()),
   );
 
   // ============================================
@@ -173,14 +173,14 @@ Future<void> configureDependencies() async {
   getIt.registerFactory<AccountSetupBloc>(
     () => AccountSetupBloc(
       accountRepository: getIt<AccountRepository>(),
-      saveAccount: getIt<SaveAccountUseCase>(),
+      saveAccount: getIt<SaveAccount>(),
     ),
   );
 
   getIt.registerFactory<BaselineBloc>(
     () => BaselineBloc(
       baselineRepository: getIt<MonthlyBaselineRepository>(),
-      saveBaseline: getIt<SaveBaselineUseCase>(),
+      saveBaseline: getIt<SaveBaseline>(),
     ),
   );
 
@@ -188,15 +188,15 @@ Future<void> configureDependencies() async {
     () => AssetLiabilityBloc(
       assetRepository: getIt<AssetRepository>(),
       liabilityRepository: getIt<LiabilityRepository>(),
-      saveAsset: getIt<SaveAssetUseCase>(),
-      saveLiability: getIt<SaveLiabilityUseCase>(),
+      saveAsset: getIt<SaveAsset>(),
+      saveLiability: getIt<SaveLiability>(),
     ),
   );
 
   getIt.registerFactory<TimeFreedomBloc>(
     () => TimeFreedomBloc(
       timeProfileRepository: getIt<TimeProfileRepository>(),
-      saveTimeProfile: getIt<SaveTimeProfileUseCase>(),
+      saveTimeProfile: getIt<SaveTimeProfile>(),
     ),
   );
 

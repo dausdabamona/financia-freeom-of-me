@@ -48,6 +48,13 @@ class FinishAccountSetupEvent extends AccountSetupEvent {
 // States
 abstract class AccountSetupState extends Equatable {
   const AccountSetupState();
+
+  // Default getters for UI consumption
+  List<Account> get accounts => [];
+  bool get isLoading => false;
+  double get totalBalance => accounts.fold(0, (sum, a) => sum + a.balance);
+  double get liquidBalance => accounts.where((a) => a.isLiquid).fold(0, (sum, a) => sum + a.balance);
+
   @override
   List<Object?> get props => [];
 }
@@ -58,9 +65,13 @@ class AccountSetupInitial extends AccountSetupState {
 
 class AccountSetupLoading extends AccountSetupState {
   const AccountSetupLoading();
+
+  @override
+  bool get isLoading => true;
 }
 
 class AccountSetupReady extends AccountSetupState {
+  @override
   final List<Account> accounts;
   final String? message;
 
@@ -69,7 +80,9 @@ class AccountSetupReady extends AccountSetupState {
     this.message,
   });
 
+  @override
   double get totalBalance => accounts.fold(0, (sum, a) => sum + a.balance);
+  @override
   double get liquidBalance => accounts.where((a) => a.isLiquid).fold(0, (sum, a) => sum + a.balance);
 
   @override

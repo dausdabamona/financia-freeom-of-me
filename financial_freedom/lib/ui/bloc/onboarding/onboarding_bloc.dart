@@ -47,6 +47,15 @@ class CompleteOnboardingEvent extends OnboardingEvent {
 // States
 abstract class OnboardingState extends Equatable {
   const OnboardingState();
+
+  // Default getters for UI consumption
+  OnboardingStep get currentStep => OnboardingStep.accounts;
+  int get stepIndex => 0;
+  int get totalSteps => 4;
+  bool get isFirstStep => stepIndex == 0;
+  bool get isLastStep => stepIndex == totalSteps - 1;
+  double get progress => (stepIndex + 1) / totalSteps;
+
   @override
   List<Object?> get props => [];
 }
@@ -56,8 +65,11 @@ class OnboardingInitial extends OnboardingState {
 }
 
 class OnboardingInProgress extends OnboardingState {
+  @override
   final OnboardingStep currentStep;
+  @override
   final int stepIndex;
+  @override
   final int totalSteps;
 
   const OnboardingInProgress({
@@ -66,8 +78,11 @@ class OnboardingInProgress extends OnboardingState {
     required this.totalSteps,
   });
 
+  @override
   bool get isFirstStep => stepIndex == 0;
+  @override
   bool get isLastStep => stepIndex == totalSteps - 1;
+  @override
   double get progress => (stepIndex + 1) / totalSteps;
 
   @override
