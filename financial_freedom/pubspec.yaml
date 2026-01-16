@@ -20,8 +20,7 @@ dependencies:
 
   # Database - Encrypted SQLite (Offline-First)
   drift: ^2.14.1
-  sqlite3_flutter_libs: ^0.5.18
-  sqlcipher_flutter_libs: ^0.6.3  # Encrypted SQLite
+  sqlcipher_flutter_libs: ^0.6.3  # Encrypted SQLite (replaces sqlite3_flutter_libs)
   path_provider: ^2.1.1
   path: ^1.8.3
 
