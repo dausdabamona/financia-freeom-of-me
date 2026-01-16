@@ -1,0 +1,111 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main, master, claude/* ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+        channel: 'stable'
+        cache: true
+
+    - name: Get dependencies
+      working-directory: financial_freedom
+      run: flutter pub get
+
+    - name: Generate code (Drift)
+      working-directory: financial_freedom
+      run: dart run build_runner build --delete-conflicting-outputs
+
+    - name: Analyze code
+      working-directory: financial_freedom
+      run: flutter analyze --no-fatal-infos
+      continue-on-error: true
+
+    - name: Build APK (Release)
+      working-directory: financial_freedom
+      run: flutter build apk --release
+
+    - name: Build APK (Debug)
+      working-directory: financial_freedom
+      run: flutter build apk --debug
+
+    - name: Rename APKs
+      run: |
+        mv financial_freedom/build/app/outputs/flutter-apk/app-release.apk financial_freedom/build/app/outputs/flutter-apk/financial-freedom-release.apk
+        mv financial_freedom/build/app/outputs/flutter-apk/app-debug.apk financial_freedom/build/app/outputs/flutter-apk/financial-freedom-debug.apk
+
+    - name: Upload Release APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: financial-freedom-release-apk
+        path: financial_freedom/build/app/outputs/flutter-apk/financial-freedom-release.apk
+
+    - name: Upload Debug APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: financial-freedom-debug-apk
+        path: financial_freedom/build/app/outputs/flutter-apk/financial-freedom-debug.apk
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+
+    steps:
+    - name: Download Release APK
+      uses: actions/download-artifact@v4
+      with:
+        name: financial-freedom-release-apk
+
+    - name: Get current date
+      id: date
+      run: echo "date=$(date +'%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.date.outputs.date }}
+        name: Release ${{ steps.date.outputs.date }}
+        body: |
+          ## Financial Freedom APK
+
+          **Kompas Kebebasan Finansialmu** 🧭
+
+          ### Download
+          - `financial-freedom-release.apk` - APK untuk install di HP
+
+          ### Cara Install
+          1. Download file APK
+          2. Buka file di HP Android
+          3. Izinkan "Install dari sumber tidak dikenal" jika diminta
+          4. Install dan jalankan
+
+          ### Fitur
+          - ✅ Phase 1: Reality Engine
+          - ✅ Phase 2A: Onboarding System
+          - ✅ Phase 2B: Exit Simulator
+        files: financial-freedom-release.apk
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
