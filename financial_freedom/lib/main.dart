@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:financial_freedom/core/di/injection.dart';
+import 'package:financial_freedom/ui/bloc/compass/compass.dart';
+import 'package:financial_freedom/ui/pages/home/home_compass_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +24,10 @@ class FinancialFreedomApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
         useMaterial3: true,
+        cardTheme: const CardTheme(
+          elevation: 2,
+          margin: EdgeInsets.symmetric(vertical: 4),
+        ),
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -28,15 +35,14 @@ class FinancialFreedomApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
         useMaterial3: true,
-      ),
-      home: const Scaffold(
-        body: Center(
-          child: Text(
-            'Financial Freedom Compass\nKedaulatan Waktu Dimulai Di Sini',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18),
-          ),
+        cardTheme: const CardTheme(
+          elevation: 2,
+          margin: EdgeInsets.symmetric(vertical: 4),
         ),
+      ),
+      home: BlocProvider<CompassBloc>(
+        create: (context) => getIt<CompassBloc>()..add(const LoadCompassEvent()),
+        child: const HomeCompassPage(),
       ),
     );
   }

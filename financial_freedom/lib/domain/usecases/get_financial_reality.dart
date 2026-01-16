@@ -12,13 +12,13 @@ import 'package:financial_freedom/domain/repositories/financial_repository.dart'
 /// - Runway
 /// - Salary Dependency
 /// - Freedom Score
-class GetFinancialReality extends UseCase<FinancialSnapshot, NoParams> {
-  final FinancialRepository repository;
+class GetFinancialReality extends UseCase<FinancialSnapshot?, NoParams> {
+  final FinancialSnapshotRepository repository;
 
   GetFinancialReality(this.repository);
 
   @override
-  Future<Either<Failure, FinancialSnapshot>> call(NoParams params) {
+  Future<Either<Failure, FinancialSnapshot?>> call(NoParams params) {
     return repository.getLatestSnapshot();
   }
 }

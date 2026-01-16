@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
@@ -7,6 +8,15 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sqlcipher_flutter_libs/sqlcipher_flutter_libs.dart';
 import 'package:sqlite3/open.dart';
 
+import 'package:financial_freedom/core/database/tables/tables.dart';
+import 'package:financial_freedom/core/database/daos/account_dao.dart';
+import 'package:financial_freedom/core/database/daos/transaction_dao.dart';
+import 'package:financial_freedom/core/database/daos/asset_dao.dart';
+import 'package:financial_freedom/core/database/daos/liability_dao.dart';
+import 'package:financial_freedom/core/database/daos/monthly_baseline_dao.dart';
+import 'package:financial_freedom/core/database/daos/financial_snapshot_dao.dart';
+import 'package:financial_freedom/core/database/daos/daily_compass_dao.dart';
+
 part 'app_database.g.dart';
 
 /// Financial Freedom App Database
@@ -14,17 +24,42 @@ part 'app_database.g.dart';
 /// Uses SQLCipher for encryption - all data is encrypted at rest.
 /// This is critical for financial data privacy.
 ///
-/// Tables will be added here as features are implemented:
-/// - Income sources
-/// - Expenses
-/// - Assets
-/// - Financial snapshots
-@DriftDatabase(tables: [])
+/// Schema Version History:
+/// - v1: Initial schema with all Reality Engine tables
+@DriftDatabase(
+  tables: [
+    Accounts,
+    Transactions,
+    Assets,
+    Liabilities,
+    MonthlyBaselines,
+    FinancialSnapshots,
+    DailyCompass,
+  ],
+  daos: [
+    AccountDao,
+    TransactionDao,
+    AssetDao,
+    LiabilityDao,
+    MonthlyBaselineDao,
+    FinancialSnapshotDao,
+    DailyCompassDao,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
   int get schemaVersion => 1;
+
+  // Lazy-initialized DAOs
+  late final accountDao = AccountDao(this);
+  late final transactionDao = TransactionDao(this);
+  late final assetDao = AssetDao(this);
+  late final liabilityDao = LiabilityDao(this);
+  late final monthlyBaselineDao = MonthlyBaselineDao(this);
+  late final financialSnapshotDao = FinancialSnapshotDao(this);
+  late final dailyCompassDao = DailyCompassDao(this);
 
   /// Creates an encrypted database instance.
   /// Encryption key is stored securely in device keychain.
@@ -36,6 +71,11 @@ class AppDatabase extends _$AppDatabase {
     final encryptionKey = await _getOrCreateEncryptionKey();
 
     return AppDatabase(_openEncryptedDatabase(file, encryptionKey));
+  }
+
+  /// Creates an in-memory database for testing.
+  static AppDatabase createInMemory() {
+    return AppDatabase(NativeDatabase.memory());
   }
 
   /// Retrieves existing key or creates new one.
@@ -59,12 +99,10 @@ class AppDatabase extends _$AppDatabase {
 
   /// Generates a cryptographically secure key.
   static String _generateSecureKey() {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final random = List.generate(32, (index) {
-      final randomIndex = DateTime.now().microsecondsSinceEpoch % chars.length;
-      return chars[randomIndex];
-    });
-    return random.join();
+    const chars =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final random = Random.secure();
+    return List.generate(32, (_) => chars[random.nextInt(chars.length)]).join();
   }
 
   /// Opens database with SQLCipher encryption.
@@ -92,6 +130,14 @@ class AppDatabase extends _$AppDatabase {
       },
       onUpgrade: (Migrator m, int from, int to) async {
         // Handle migrations here as schema evolves
+        // Example:
+        // if (from < 2) {
+        //   await m.addColumn(accounts, accounts.someNewColumn);
+        // }
+      },
+      beforeOpen: (details) async {
+        // Enable foreign keys
+        await customStatement('PRAGMA foreign_keys = ON');
       },
     );
   }
