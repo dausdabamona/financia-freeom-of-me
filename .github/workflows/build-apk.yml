@@ -49,6 +49,9 @@ jobs:
     - name: Configure Android Gradle for SDK 35 and Kotlin 1.9
       working-directory: financial_freedom/android
       run: |
+        # Update Gradle wrapper to 8.0 (required by Android Gradle Plugin 8.1.0)
+        sed -i 's/gradle-.*-all.zip/gradle-8.0-all.zip/' gradle/wrapper/gradle-wrapper.properties
+
         # Update settings.gradle with modern Flutter plugin setup and Kotlin 1.9.24
         cat > settings.gradle << 'EOF'
         pluginManagement {
