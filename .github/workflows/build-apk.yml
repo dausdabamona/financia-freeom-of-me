@@ -28,6 +28,16 @@ jobs:
         channel: 'stable'
         cache: true
 
+    - name: Regenerate Android project
+      working-directory: financial_freedom
+      run: |
+        # Remove incomplete android folder and regenerate
+        rm -rf android
+        flutter create --platforms=android --org com.example .
+        # Create local.properties
+        echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+        echo "flutter.sdk=$FLUTTER_ROOT" >> android/local.properties
+
     - name: Get dependencies
       working-directory: financial_freedom
       run: flutter pub get
