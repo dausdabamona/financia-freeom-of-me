@@ -4,6 +4,7 @@ import 'package:financial_freedom/domain/entities/financial_snapshot.dart';
 import 'package:financial_freedom/domain/entities/daily_compass_entry.dart';
 import 'package:financial_freedom/domain/entities/freedom_phase.dart';
 import 'package:financial_freedom/ui/bloc/compass/compass.dart';
+import 'package:financial_freedom/ui/pages/exit_simulator/exit_vision_page.dart';
 
 /// Home Compass Page - Main screen of the Financial Freedom app
 ///
@@ -30,6 +31,18 @@ class HomeCompassPage extends StatelessWidget {
             },
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const ExitVisionPage(),
+            ),
+          );
+        },
+        icon: const Icon(Icons.timeline),
+        label: const Text('Exit Simulator'),
+        backgroundColor: Colors.teal,
       ),
       body: BlocBuilder<CompassBloc, CompassState>(
         builder: (context, state) {
@@ -205,7 +218,78 @@ class _LoadedView extends StatelessWidget {
               const SizedBox(height: 24),
               _FirstTimeUserNote(),
             ],
+
+            const SizedBox(height: 24),
+
+            // Exit Simulator Card
+            _ExitSimulatorCard(),
+
+            const SizedBox(height: 80), // Space for FAB
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Exit Simulator promotion card
+class _ExitSimulatorCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.teal.shade50,
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const ExitVisionPage(),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.teal.shade100,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.timeline,
+                  color: Colors.teal.shade700,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Exit Simulator',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.teal.shade800,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Lihat proyeksi mingguanmu jika gaji berhenti hari ini',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.teal.shade700,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: Colors.teal.shade700,
+              ),
+            ],
+          ),
         ),
       ),
     );

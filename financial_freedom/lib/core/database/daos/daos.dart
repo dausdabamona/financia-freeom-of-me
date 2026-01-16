@@ -9,3 +9,5 @@ export 'liability_dao.dart';
 export 'monthly_baseline_dao.dart';
 export 'transaction_dao.dart';
 export 'time_profile_dao.dart';
+export 'exit_scenario_dao.dart';
+export 'weekly_projection_dao.dart';

@@ -9,3 +9,5 @@ export 'monthly_baseline_table.dart';
 export 'financial_snapshots_table.dart';
 export 'daily_compass_table.dart';
 export 'time_profiles_table.dart';
+export 'exit_scenarios_table.dart';
+export 'weekly_projections_table.dart';

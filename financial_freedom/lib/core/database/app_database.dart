@@ -17,6 +17,8 @@ import 'package:financial_freedom/core/database/daos/monthly_baseline_dao.dart';
 import 'package:financial_freedom/core/database/daos/financial_snapshot_dao.dart';
 import 'package:financial_freedom/core/database/daos/daily_compass_dao.dart';
 import 'package:financial_freedom/core/database/daos/time_profile_dao.dart';
+import 'package:financial_freedom/core/database/daos/exit_scenario_dao.dart';
+import 'package:financial_freedom/core/database/daos/weekly_projection_dao.dart';
 
 part 'app_database.g.dart';
 
@@ -28,6 +30,7 @@ part 'app_database.g.dart';
 /// Schema Version History:
 /// - v1: Initial schema with all Reality Engine tables
 /// - v2: Added TimeProfiles table for time freedom tracking
+/// - v3: Added Exit Simulator tables (exit_scenarios, weekly_exit_projection)
 @DriftDatabase(
   tables: [
     Accounts,
@@ -38,6 +41,8 @@ part 'app_database.g.dart';
     FinancialSnapshots,
     DailyCompass,
     TimeProfiles,
+    ExitScenariosTable,
+    WeeklyProjectionsTable,
   ],
   daos: [
     AccountDao,
@@ -48,13 +53,15 @@ part 'app_database.g.dart';
     FinancialSnapshotDao,
     DailyCompassDao,
     TimeProfileDao,
+    ExitScenarioDao,
+    WeeklyProjectionDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   // Lazy-initialized DAOs
   late final accountDao = AccountDao(this);
@@ -65,6 +72,8 @@ class AppDatabase extends _$AppDatabase {
   late final financialSnapshotDao = FinancialSnapshotDao(this);
   late final dailyCompassDao = DailyCompassDao(this);
   late final timeProfileDao = TimeProfileDao(this);
+  late final exitScenarioDao = ExitScenarioDao(this);
+  late final weeklyProjectionDao = WeeklyProjectionDao(this);
 
   /// Creates an encrypted database instance.
   /// Encryption key is stored securely in device keychain.
@@ -137,6 +146,10 @@ class AppDatabase extends _$AppDatabase {
         // Handle migrations here as schema evolves
         if (from < 2) {
           await m.createTable(timeProfiles);
+        }
+        if (from < 3) {
+          await m.createTable(exitScenariosTable);
+          await m.createTable(weeklyProjectionsTable);
         }
       },
       beforeOpen: (details) async {

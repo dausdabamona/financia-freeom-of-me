@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:financial_freedom/core/database/app_database.dart';
 import 'package:financial_freedom/core/services/freedom_calculator.dart';
+import 'package:financial_freedom/core/services/weekly_exit_simulator.dart';
+import 'package:financial_freedom/core/services/scenario_engine.dart';
 
 // Repository implementations
 import 'package:financial_freedom/data/repositories/financial_snapshot_repository_impl.dart';
@@ -11,6 +13,8 @@ import 'package:financial_freedom/data/repositories/asset_repository_impl.dart';
 import 'package:financial_freedom/data/repositories/liability_repository_impl.dart';
 import 'package:financial_freedom/data/repositories/monthly_baseline_repository_impl.dart';
 import 'package:financial_freedom/data/repositories/time_profile_repository_impl.dart';
+import 'package:financial_freedom/data/repositories/exit_scenario_repository_impl.dart';
+import 'package:financial_freedom/data/repositories/weekly_projection_repository_impl.dart';
 
 // Repository interfaces
 import 'package:financial_freedom/domain/repositories/financial_repository.dart';
@@ -20,6 +24,8 @@ import 'package:financial_freedom/domain/repositories/asset_repository.dart';
 import 'package:financial_freedom/domain/repositories/liability_repository.dart';
 import 'package:financial_freedom/domain/repositories/monthly_baseline_repository.dart';
 import 'package:financial_freedom/domain/repositories/time_profile_repository.dart';
+import 'package:financial_freedom/domain/repositories/exit_scenario_repository.dart';
+import 'package:financial_freedom/domain/repositories/weekly_projection_repository.dart';
 
 // Use cases
 import 'package:financial_freedom/domain/usecases/generate_daily_snapshot.dart';
@@ -33,6 +39,7 @@ import 'package:financial_freedom/domain/usecases/save_time_profile.dart';
 // BLoCs
 import 'package:financial_freedom/ui/bloc/compass/compass_bloc.dart';
 import 'package:financial_freedom/ui/bloc/onboarding/onboarding.dart';
+import 'package:financial_freedom/ui/bloc/exit_simulator/exit_simulator.dart';
 
 final getIt = GetIt.instance;
 
@@ -49,6 +56,9 @@ Future<void> configureDependencies() async {
 
   // Calculator
   getIt.registerLazySingleton<FreedomCalculator>(() => const FreedomCalculator());
+
+  // Weekly Exit Simulator
+  getIt.registerLazySingleton<WeeklyExitSimulator>(() => const WeeklyExitSimulator());
 
   // ============================================
   // Repositories
@@ -86,6 +96,14 @@ Future<void> configureDependencies() async {
     () => TimeProfileRepositoryImpl(getIt<AppDatabase>()),
   );
 
+  getIt.registerLazySingleton<ExitScenarioRepository>(
+    () => ExitScenarioRepositoryImpl(getIt<AppDatabase>()),
+  );
+
+  getIt.registerLazySingleton<WeeklyProjectionRepository>(
+    () => WeeklyProjectionRepositoryImpl(getIt<AppDatabase>()),
+  );
+
   // ============================================
   // Use Cases
   // ============================================
@@ -121,6 +139,18 @@ Future<void> configureDependencies() async {
 
   getIt.registerLazySingleton<SaveTimeProfileUseCase>(
     () => SaveTimeProfileUseCase(getIt<TimeProfileRepository>()),
+  );
+
+  // ============================================
+  // Services
+  // ============================================
+
+  getIt.registerLazySingleton<ScenarioEngine>(
+    () => ScenarioEngine(
+      simulator: getIt<WeeklyExitSimulator>(),
+      scenarioRepository: getIt<ExitScenarioRepository>(),
+      projectionRepository: getIt<WeeklyProjectionRepository>(),
+    ),
   );
 
   // ============================================
@@ -167,6 +197,13 @@ Future<void> configureDependencies() async {
     () => TimeFreedomBloc(
       timeProfileRepository: getIt<TimeProfileRepository>(),
       saveTimeProfile: getIt<SaveTimeProfileUseCase>(),
+    ),
+  );
+
+  getIt.registerFactory<ExitSimulatorBloc>(
+    () => ExitSimulatorBloc(
+      scenarioEngine: getIt<ScenarioEngine>(),
+      financialDataRepository: getIt<FinancialDataRepositoryImpl>(),
     ),
   );
 }
