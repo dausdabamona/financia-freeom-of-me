@@ -172,7 +172,7 @@ class _AccountTile extends StatelessWidget {
         return Icons.money;
       case AccountType.bank:
         return Icons.account_balance;
-      case AccountType.eWallet:
+      case AccountType.ewallet:
         return Icons.phone_android;
       case AccountType.investment:
         return Icons.trending_up;

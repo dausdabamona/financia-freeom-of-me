@@ -31,9 +31,17 @@ jobs:
     - name: Regenerate Android project
       working-directory: financial_freedom
       run: |
+        # Backup test files before flutter create
+        if [ -f "test/widget_test.dart" ]; then
+          cp test/widget_test.dart test/widget_test.dart.bak
+        fi
         # Remove incomplete android folder and regenerate
         rm -rf android
         flutter create --platforms=android --org com.example .
+        # Restore test files
+        if [ -f "test/widget_test.dart.bak" ]; then
+          mv test/widget_test.dart.bak test/widget_test.dart
+        fi
         # Create local.properties
         echo "sdk.dir=$ANDROID_HOME" > android/local.properties
         echo "flutter.sdk=$FLUTTER_ROOT" >> android/local.properties
