@@ -11,3 +11,6 @@ export 'transaction_dao.dart';
 export 'time_profile_dao.dart';
 export 'exit_scenario_dao.dart';
 export 'weekly_projection_dao.dart';
+
+// PPK Assistant DAOs
+export 'ppk/ppk_daos.dart';

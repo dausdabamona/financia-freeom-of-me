@@ -11,3 +11,6 @@ export 'daily_compass_table.dart';
 export 'time_profiles_table.dart';
 export 'exit_scenarios_table.dart';
 export 'weekly_projections_table.dart';
+
+// PPK Assistant Tables
+export 'ppk/ppk_tables.dart';

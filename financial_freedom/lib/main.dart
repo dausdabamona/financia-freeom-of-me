@@ -5,6 +5,8 @@ import 'package:financial_freedom/domain/repositories/account_repository.dart';
 import 'package:financial_freedom/ui/bloc/compass/compass.dart';
 import 'package:financial_freedom/ui/pages/home/home_compass_page.dart';
 import 'package:financial_freedom/ui/pages/onboarding/onboarding_flow_page.dart';
+import 'package:financial_freedom/ui/pages/ppk/ppk_pages.dart';
+import 'package:financial_freedom/ui/pages/app_mode_selector.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +45,12 @@ class FinancialFreedomApp extends StatelessWidget {
         ),
       ),
       home: const AppEntryPoint(),
+      routes: {
+        '/mode-selector': (context) => const AppModeSelectorPage(),
+        '/ppk': (context) => const PpkDashboardPage(),
+        '/ppk/up': (context) => const UpListPage(),
+        '/ppk/up/create': (context) => const UpFormPage(),
+      },
     );
   }
 }
@@ -260,6 +268,13 @@ class _WelcomeScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 16),
+
+              // PPK Assistant button
+              TextButton.icon(
+                onPressed: () => Navigator.pushNamed(context, '/ppk'),
+                icon: const Icon(Icons.account_balance, size: 18),
+                label: const Text('Masuk ke Asisten PPK'),
+              ),
             ],
           ),
         ),
