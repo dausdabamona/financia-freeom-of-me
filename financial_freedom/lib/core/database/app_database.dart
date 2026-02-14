@@ -136,6 +136,22 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
+  /// Delete all data from all tables
+  Future<void> deleteAllData() async {
+    await transaction(() async {
+      await delete(accounts).go();
+      await delete(transactions).go();
+      await delete(assets).go();
+      await delete(liabilities).go();
+      await delete(monthlyBaselines).go();
+      await delete(financialSnapshots).go();
+      await delete(dailyCompass).go();
+      await delete(timeProfiles).go();
+      await delete(exitScenariosTable).go();
+      await delete(weeklyProjectionsTable).go();
+    });
+  }
+
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
