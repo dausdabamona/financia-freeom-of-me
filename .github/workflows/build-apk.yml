@@ -5,17 +5,22 @@ on:
     branches: [ main, master, claude/* ]
   pull_request:
     branches: [ main, master ]
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
+    name: Build Flutter APK
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup Java
+    - name: Setup Java 17
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
@@ -28,156 +33,19 @@ jobs:
         channel: 'stable'
         cache: true
 
-    - name: Regenerate Android project
-      working-directory: financial_freedom
-      run: |
-        # Backup test files before flutter create
-        if [ -f "test/widget_test.dart" ]; then
-          cp test/widget_test.dart test/widget_test.dart.bak
-        fi
-        # Remove incomplete android folder and regenerate
-        rm -rf android
-        flutter create --platforms=android --org com.example .
-        # Restore test files
-        if [ -f "test/widget_test.dart.bak" ]; then
-          mv test/widget_test.dart.bak test/widget_test.dart
-        fi
-        # Create local.properties
-        echo "sdk.dir=$ANDROID_HOME" > android/local.properties
-        echo "flutter.sdk=$FLUTTER_ROOT" >> android/local.properties
-
-    - name: Configure Android Gradle for SDK 35 and Kotlin 1.9
+    - name: Create local.properties
       working-directory: financial_freedom/android
       run: |
-        # Update Gradle wrapper to 8.0 (required by Android Gradle Plugin 8.1.0)
-        sed -i 's/gradle-.*-all.zip/gradle-8.0-all.zip/' gradle/wrapper/gradle-wrapper.properties
-
-        # Update settings.gradle with modern Flutter plugin setup and Kotlin 1.9.24
-        cat > settings.gradle << 'EOF'
-        pluginManagement {
-            def flutterSdkPath = {
-                def properties = new Properties()
-                file("local.properties").withInputStream { properties.load(it) }
-                def flutterSdkPath = properties.getProperty("flutter.sdk")
-                assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
-                return flutterSdkPath
-            }()
-
-            includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
-
-            repositories {
-                google()
-                mavenCentral()
-                gradlePluginPortal()
-            }
-        }
-
-        plugins {
-            id "dev.flutter.flutter-plugin-loader" version "1.0.0"
-            id "com.android.application" version "8.1.0" apply false
-            id "org.jetbrains.kotlin.android" version "1.9.24" apply false
-        }
-
-        include ':app'
-        EOF
-
-        # Update root build.gradle with Kotlin version
-        cat > build.gradle << 'EOF'
-        buildscript {
-            ext.kotlin_version = '1.9.24'
-        }
-
-        allprojects {
-            repositories {
-                google()
-                mavenCentral()
-            }
-        }
-
-        rootProject.buildDir = '../build'
-        subprojects {
-            project.buildDir = "${rootProject.buildDir}/${project.name}"
-        }
-        subprojects {
-            project.evaluationDependsOn(':app')
-        }
-
-        tasks.register("clean", Delete) {
-            delete rootProject.buildDir
-        }
-        EOF
-
-        # Update app/build.gradle with compileSdk 35, Kotlin 1.9, and Java 17
-        cat > app/build.gradle << 'EOF'
-        plugins {
-            id "com.android.application"
-            id "org.jetbrains.kotlin.android"
-            id "dev.flutter.flutter-gradle-plugin"
-        }
-
-        def localProperties = new Properties()
-        def localPropertiesFile = rootProject.file('local.properties')
-        if (localPropertiesFile.exists()) {
-            localPropertiesFile.withReader('UTF-8') { reader ->
-                localProperties.load(reader)
-            }
-        }
-
-        def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-        if (flutterVersionCode == null) {
-            flutterVersionCode = '1'
-        }
-
-        def flutterVersionName = localProperties.getProperty('flutter.versionName')
-        if (flutterVersionName == null) {
-            flutterVersionName = '1.0'
-        }
-
-        android {
-            namespace "com.example.financial_freedom"
-            compileSdk 35
-            ndkVersion flutter.ndkVersion
-
-            compileOptions {
-                sourceCompatibility JavaVersion.VERSION_17
-                targetCompatibility JavaVersion.VERSION_17
-            }
-
-            kotlinOptions {
-                jvmTarget = '17'
-            }
-
-            sourceSets {
-                main.java.srcDirs += 'src/main/kotlin'
-            }
-
-            defaultConfig {
-                applicationId "com.example.financial_freedom"
-                minSdk 21
-                targetSdk 35
-                versionCode flutterVersionCode.toInteger()
-                versionName flutterVersionName
-            }
-
-            buildTypes {
-                release {
-                    signingConfig signingConfigs.debug
-                }
-            }
-        }
-
-        flutter {
-            source '../..'
-        }
-
-        dependencies {}
-        EOF
+        echo "sdk.dir=$ANDROID_HOME" > local.properties
+        echo "flutter.sdk=$FLUTTER_ROOT" >> local.properties
+        echo "flutter.versionCode=1" >> local.properties
+        echo "flutter.versionName=1.0.0" >> local.properties
 
     - name: Get dependencies
       working-directory: financial_freedom
       run: flutter pub get
 
-    - name: Generate code (Drift)
+    - name: Generate code (Drift database)
       working-directory: financial_freedom
       run: dart run build_runner build --delete-conflicting-outputs
 
@@ -186,32 +54,41 @@ jobs:
       run: flutter analyze --no-fatal-infos
       continue-on-error: true
 
-    - name: Build APK (Release)
+    - name: Run tests
+      working-directory: financial_freedom
+      run: flutter test
+      continue-on-error: true
+
+    - name: Build Release APK
       working-directory: financial_freedom
       run: flutter build apk --release
 
-    - name: Build APK (Debug)
+    - name: Build Debug APK
       working-directory: financial_freedom
       run: flutter build apk --debug
 
     - name: Rename APKs
       run: |
-        mv financial_freedom/build/app/outputs/flutter-apk/app-release.apk financial_freedom/build/app/outputs/flutter-apk/financial-freedom-release.apk
-        mv financial_freedom/build/app/outputs/flutter-apk/app-debug.apk financial_freedom/build/app/outputs/flutter-apk/financial-freedom-debug.apk
+        mkdir -p artifacts
+        cp financial_freedom/build/app/outputs/flutter-apk/app-release.apk artifacts/financial-freedom-release.apk
+        cp financial_freedom/build/app/outputs/flutter-apk/app-debug.apk artifacts/financial-freedom-debug.apk
 
     - name: Upload Release APK
       uses: actions/upload-artifact@v4
       with:
         name: financial-freedom-release-apk
-        path: financial_freedom/build/app/outputs/flutter-apk/financial-freedom-release.apk
+        path: artifacts/financial-freedom-release.apk
+        retention-days: 30
 
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
         name: financial-freedom-debug-apk
-        path: financial_freedom/build/app/outputs/flutter-apk/financial-freedom-debug.apk
+        path: artifacts/financial-freedom-debug.apk
+        retention-days: 14
 
   release:
+    name: Create GitHub Release
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
@@ -222,33 +99,36 @@ jobs:
       with:
         name: financial-freedom-release-apk
 
-    - name: Get current date
-      id: date
-      run: echo "date=$(date +'%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
+    - name: Get version info
+      id: version
+      run: |
+        echo "date=$(date +'%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
+        echo "tag=v1.0.0-$(date +'%Y%m%d%H%M')" >> $GITHUB_OUTPUT
 
     - name: Create Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
-        tag_name: v${{ steps.date.outputs.date }}
-        name: Release ${{ steps.date.outputs.date }}
+        tag_name: ${{ steps.version.outputs.tag }}
+        name: Financial Freedom ${{ steps.version.outputs.date }}
         body: |
           ## Financial Freedom APK
 
-          **Kompas Kebebasan Finansialmu** 🧭
+          **Kompas Kebebasan Finansialmu**
 
           ### Download
-          - `financial-freedom-release.apk` - APK untuk install di HP
+          Download file `financial-freedom-release.apk` di bawah ini.
 
-          ### Cara Install
-          1. Download file APK
+          ### Cara Install di HP Android
+          1. Download file APK dari bagian **Assets** di bawah
           2. Buka file di HP Android
-          3. Izinkan "Install dari sumber tidak dikenal" jika diminta
-          4. Install dan jalankan
+          3. Jika diminta, izinkan **"Install dari sumber tidak dikenal"**
+          4. Tap **Install** dan tunggu selesai
+          5. Buka aplikasi **Financial Freedom**
 
           ### Fitur
-          - ✅ Phase 1: Reality Engine
-          - ✅ Phase 2A: Onboarding System
-          - ✅ Phase 2B: Exit Simulator
+          - Phase 1: Reality Engine - Input data keuangan
+          - Phase 2A: Onboarding System - Setup awal
+          - Phase 2B: Exit Simulator - Simulasi kebebasan finansial
         files: financial-freedom-release.apk
         draft: false
         prerelease: false
