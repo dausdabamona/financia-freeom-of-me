@@ -58,48 +58,86 @@ class _BaselineEditForm extends StatefulWidget {
 }
 
 class _BaselineEditFormState extends State<_BaselineEditForm> {
-  final _housingController = TextEditingController();
-  final _foodController = TextEditingController();
-  final _transportController = TextEditingController();
-  final _healthController = TextEditingController();
-  final _utilitiesController = TextEditingController();
-  final _debtController = TextEditingController();
+  final _rentController = TextEditingController();
+  final _householdController = TextEditingController();
+  final _transportationController = TextEditingController();
+  final _insuranceController = TextEditingController();
+  final _incomeTaxController = TextEditingController();
+  final _propertyTaxController = TextEditingController();
+  final _personalPleasureController = TextEditingController();
+  final _familyRecreationController = TextEditingController();
+  final _giftsController = TextEditingController();
+  final _educationController = TextEditingController();
+  final _maintenanceController = TextEditingController();
+  final _householdStaffController = TextEditingController();
+  final _membershipController = TextEditingController();
+  final _healthcareController = TextEditingController();
+  final _socialContributionController = TextEditingController();
   final _otherController = TextEditingController();
 
   @override
   void dispose() {
-    _housingController.dispose();
-    _foodController.dispose();
-    _transportController.dispose();
-    _healthController.dispose();
-    _utilitiesController.dispose();
-    _debtController.dispose();
+    _rentController.dispose();
+    _householdController.dispose();
+    _transportationController.dispose();
+    _insuranceController.dispose();
+    _incomeTaxController.dispose();
+    _propertyTaxController.dispose();
+    _personalPleasureController.dispose();
+    _familyRecreationController.dispose();
+    _giftsController.dispose();
+    _educationController.dispose();
+    _maintenanceController.dispose();
+    _householdStaffController.dispose();
+    _membershipController.dispose();
+    _healthcareController.dispose();
+    _socialContributionController.dispose();
     _otherController.dispose();
     super.dispose();
   }
 
+  double _val(TextEditingController c) => double.tryParse(c.text) ?? 0;
+
   void _updateBaseline() {
     context.read<BaselineBloc>().add(
           UpdateBaselineEvent(
-            housing: double.tryParse(_housingController.text) ?? 0,
-            food: double.tryParse(_foodController.text) ?? 0,
-            transport: double.tryParse(_transportController.text) ?? 0,
-            health: double.tryParse(_healthController.text) ?? 0,
-            utilities: double.tryParse(_utilitiesController.text) ?? 0,
-            debtPayments: double.tryParse(_debtController.text) ?? 0,
-            other: double.tryParse(_otherController.text) ?? 0,
+            rent: _val(_rentController),
+            household: _val(_householdController),
+            transportation: _val(_transportationController),
+            insurance: _val(_insuranceController),
+            incomeTax: _val(_incomeTaxController),
+            propertyTax: _val(_propertyTaxController),
+            personalPleasure: _val(_personalPleasureController),
+            familyRecreation: _val(_familyRecreationController),
+            gifts: _val(_giftsController),
+            education: _val(_educationController),
+            maintenance: _val(_maintenanceController),
+            householdStaff: _val(_householdStaffController),
+            membership: _val(_membershipController),
+            healthcare: _val(_healthcareController),
+            socialContribution: _val(_socialContributionController),
+            other: _val(_otherController),
           ),
         );
   }
 
   double get _totalBaseline {
-    return (double.tryParse(_housingController.text) ?? 0) +
-        (double.tryParse(_foodController.text) ?? 0) +
-        (double.tryParse(_transportController.text) ?? 0) +
-        (double.tryParse(_healthController.text) ?? 0) +
-        (double.tryParse(_utilitiesController.text) ?? 0) +
-        (double.tryParse(_debtController.text) ?? 0) +
-        (double.tryParse(_otherController.text) ?? 0);
+    return _val(_rentController) +
+        _val(_householdController) +
+        _val(_transportationController) +
+        _val(_insuranceController) +
+        _val(_incomeTaxController) +
+        _val(_propertyTaxController) +
+        _val(_personalPleasureController) +
+        _val(_familyRecreationController) +
+        _val(_giftsController) +
+        _val(_educationController) +
+        _val(_maintenanceController) +
+        _val(_householdStaffController) +
+        _val(_membershipController) +
+        _val(_healthcareController) +
+        _val(_socialContributionController) +
+        _val(_otherController);
   }
 
   void _save() {
@@ -159,12 +197,21 @@ class _BaselineEditFormState extends State<_BaselineEditForm> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  _BaselineField(icon: Icons.home, label: 'Tempat Tinggal', hint: 'Kontrakan, kost, cicilan rumah', controller: _housingController, onChanged: _updateBaseline),
-                  _BaselineField(icon: Icons.restaurant, label: 'Makan & Minum', hint: 'Kebutuhan makan sehari-hari', controller: _foodController, onChanged: _updateBaseline),
-                  _BaselineField(icon: Icons.directions_car, label: 'Transportasi', hint: 'Bensin, ojol, transport umum', controller: _transportController, onChanged: _updateBaseline),
-                  _BaselineField(icon: Icons.bolt, label: 'Utilitas', hint: 'Listrik, air, internet, pulsa', controller: _utilitiesController, onChanged: _updateBaseline),
-                  _BaselineField(icon: Icons.medical_services, label: 'Kesehatan', hint: 'BPJS, obat rutin, asuransi', controller: _healthController, onChanged: _updateBaseline),
-                  _BaselineField(icon: Icons.credit_card, label: 'Cicilan Utang', hint: 'KTA, kartu kredit, pinjaman', controller: _debtController, onChanged: _updateBaseline),
+                  _BaselineField(icon: Icons.home, label: 'Sewa / Angsuran', hint: 'Kontrakan, kost, cicilan rumah', controller: _rentController, onChanged: _updateBaseline),
+                  _BaselineField(icon: Icons.kitchen, label: 'Biaya Rumah Tangga', hint: 'Kebutuhan rumah tangga sehari-hari', controller: _householdController, onChanged: _updateBaseline),
+                  _BaselineField(icon: Icons.directions_car, label: 'Biaya Transport', hint: 'Bensin, ojol, transport umum', controller: _transportationController, onChanged: _updateBaseline),
+                  _BaselineField(icon: Icons.shield, label: 'Asuransi', hint: 'Asuransi jiwa, kesehatan, kendaraan', controller: _insuranceController, onChanged: _updateBaseline),
+                  _BaselineField(icon: Icons.account_balance, label: 'Pajak Penghasilan', hint: 'PPh 21, pajak tahunan', controller: _incomeTaxController, onChanged: _updateBaseline),
+                  _BaselineField(icon: Icons.apartment, label: 'Pajak Property', hint: 'PBB, pajak tanah', controller: _propertyTaxController, onChanged: _updateBaseline),
+                  _BaselineField(icon: Icons.celebration, label: 'Kesenangan Pribadi', hint: 'Hobi, hiburan pribadi', controller: _personalPleasureController, onChanged: _updateBaseline),
+                  _BaselineField(icon: Icons.family_restroom, label: 'Rekreasi Keluarga', hint: 'Liburan, jalan-jalan keluarga', controller: _familyRecreationController, onChanged: _updateBaseline),
+                  _BaselineField(icon: Icons.card_giftcard, label: 'Hadiah', hint: 'Kado, sumbangan acara', controller: _giftsController, onChanged: _updateBaseline),
+                  _BaselineField(icon: Icons.school, label: 'Pendidikan', hint: 'SPP, kursus, buku', controller: _educationController, onChanged: _updateBaseline),
+                  _BaselineField(icon: Icons.build, label: 'Perbaikan & Maintenance', hint: 'Servis rumah, kendaraan', controller: _maintenanceController, onChanged: _updateBaseline),
+                  _BaselineField(icon: Icons.people, label: 'Gaji Pegawai RT', hint: 'ART, supir, tukang kebun', controller: _householdStaffController, onChanged: _updateBaseline),
+                  _BaselineField(icon: Icons.card_membership, label: 'Keanggotaan Club', hint: 'Gym, club, membership', controller: _membershipController, onChanged: _updateBaseline),
+                  _BaselineField(icon: Icons.medical_services, label: 'Kesehatan', hint: 'BPJS, obat rutin, dokter', controller: _healthcareController, onChanged: _updateBaseline),
+                  _BaselineField(icon: Icons.volunteer_activism, label: 'Kontribusi Sosial', hint: 'Zakat, sedekah, donasi', controller: _socialContributionController, onChanged: _updateBaseline),
                   _BaselineField(icon: Icons.more_horiz, label: 'Lainnya', hint: 'Kebutuhan wajib lainnya', controller: _otherController, onChanged: _updateBaseline),
                 ],
               ),
