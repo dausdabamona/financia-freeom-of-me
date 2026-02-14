@@ -41,26 +41,49 @@ class SaveBaselineEvent extends BaselineEvent {
 }
 
 class UpdateBaselineEvent extends BaselineEvent {
-  final double housing;
-  final double food;
-  final double transport;
-  final double health;
-  final double utilities;
-  final double debtPayments;
-  final double other;
+  // Sesuai format Income Statement
+  final double rent;             // 1. Sewa / Angsuran
+  final double household;        // 2. Biaya Rumah Tangga
+  final double transportation;   // 3. Biaya Transport
+  final double insurance;        // 4. Asuransi
+  final double incomeTax;        // 5. Pajak Penghasilan
+  final double propertyTax;      // 6. Pajak Property
+  final double personalPleasure; // 7. Kesenangan Pribadi
+  final double familyRecreation; // 8. Rekreasi Keluarga
+  final double gifts;            // 9. Hadiah
+  final double education;        // 10. Pendidikan
+  final double maintenance;      // 11. Perbaikan & Maintenance
+  final double householdStaff;   // 12. Gaji Pegawai RT
+  final double membership;       // 13. Keanggotaan Club
+  final double healthcare;       // 14. Kesehatan
+  final double socialContribution; // 15. Kontribusi Sosial
+  final double other;            // 16. Lainnya
 
   const UpdateBaselineEvent({
-    required this.housing,
-    required this.food,
-    required this.transport,
-    required this.health,
-    required this.utilities,
-    required this.debtPayments,
+    required this.rent,
+    required this.household,
+    required this.transportation,
+    required this.insurance,
+    required this.incomeTax,
+    required this.propertyTax,
+    required this.personalPleasure,
+    required this.familyRecreation,
+    required this.gifts,
+    required this.education,
+    required this.maintenance,
+    required this.householdStaff,
+    required this.membership,
+    required this.healthcare,
+    required this.socialContribution,
     required this.other,
   });
 
   @override
-  List<Object?> get props => [housing, food, transport, health, utilities, debtPayments, other];
+  List<Object?> get props => [
+    rent, household, transportation, insurance, incomeTax, propertyTax,
+    personalPleasure, familyRecreation, gifts, education, maintenance,
+    householdStaff, membership, healthcare, socialContribution, other,
+  ];
 }
 
 // States
@@ -68,14 +91,27 @@ abstract class BaselineState extends Equatable {
   const BaselineState();
 
   // Default getters for UI consumption
-  double get housing => 0;
-  double get food => 0;
-  double get transport => 0;
-  double get health => 0;
-  double get utilities => 0;
-  double get debtPayments => 0;
+  double get rent => 0;
+  double get household => 0;
+  double get transportation => 0;
+  double get insurance => 0;
+  double get incomeTax => 0;
+  double get propertyTax => 0;
+  double get personalPleasure => 0;
+  double get familyRecreation => 0;
+  double get gifts => 0;
+  double get education => 0;
+  double get maintenance => 0;
+  double get householdStaff => 0;
+  double get membership => 0;
+  double get healthcare => 0;
+  double get socialContribution => 0;
   double get other => 0;
-  double get totalBaseline => housing + food + transport + health + utilities + debtPayments + other;
+
+  double get totalBaseline =>
+      rent + household + transportation + insurance + incomeTax + propertyTax +
+      personalPleasure + familyRecreation + gifts + education + maintenance +
+      householdStaff + membership + healthcare + socialContribution + other;
   bool get isLoading => false;
 
   @override
@@ -95,35 +131,63 @@ class BaselineLoading extends BaselineState {
 
 class BaselineEditing extends BaselineState {
   @override
-  final double housing;
+  final double rent;
   @override
-  final double food;
+  final double household;
   @override
-  final double transport;
+  final double transportation;
   @override
-  final double health;
+  final double insurance;
   @override
-  final double utilities;
+  final double incomeTax;
   @override
-  final double debtPayments;
+  final double propertyTax;
+  @override
+  final double personalPleasure;
+  @override
+  final double familyRecreation;
+  @override
+  final double gifts;
+  @override
+  final double education;
+  @override
+  final double maintenance;
+  @override
+  final double householdStaff;
+  @override
+  final double membership;
+  @override
+  final double healthcare;
+  @override
+  final double socialContribution;
   @override
   final double other;
 
   const BaselineEditing({
-    required this.housing,
-    required this.food,
-    required this.transport,
-    required this.health,
-    required this.utilities,
-    required this.debtPayments,
+    required this.rent,
+    required this.household,
+    required this.transportation,
+    required this.insurance,
+    required this.incomeTax,
+    required this.propertyTax,
+    required this.personalPleasure,
+    required this.familyRecreation,
+    required this.gifts,
+    required this.education,
+    required this.maintenance,
+    required this.householdStaff,
+    required this.membership,
+    required this.healthcare,
+    required this.socialContribution,
     required this.other,
   });
 
   @override
-  double get totalBaseline => housing + food + transport + health + utilities + debtPayments + other;
-
-  @override
-  List<Object?> get props => [housing, food, transport, health, utilities, debtPayments, other];
+  List<Object?> get props => [
+    rent, household, transportation, insurance, incomeTax, propertyTax,
+    personalPleasure, familyRecreation, gifts, education, maintenance,
+    householdStaff, membership, healthcare, socialContribution, other,
+  ];
 }
 
 class BaselineReady extends BaselineState {
@@ -135,6 +199,7 @@ class BaselineReady extends BaselineState {
     this.message,
   });
 
+  @override
   double get totalBaseline => baseline?.totalBaseline ?? 0;
 
   @override
@@ -223,12 +288,21 @@ class BaselineBloc extends Bloc<BaselineEvent, BaselineState> {
     Emitter<BaselineState> emit,
   ) {
     emit(BaselineEditing(
-      housing: event.housing,
-      food: event.food,
-      transport: event.transport,
-      health: event.health,
-      utilities: event.utilities,
-      debtPayments: event.debtPayments,
+      rent: event.rent,
+      household: event.household,
+      transportation: event.transportation,
+      insurance: event.insurance,
+      incomeTax: event.incomeTax,
+      propertyTax: event.propertyTax,
+      personalPleasure: event.personalPleasure,
+      familyRecreation: event.familyRecreation,
+      gifts: event.gifts,
+      education: event.education,
+      maintenance: event.maintenance,
+      householdStaff: event.householdStaff,
+      membership: event.membership,
+      healthcare: event.healthcare,
+      socialContribution: event.socialContribution,
       other: event.other,
     ));
   }
@@ -242,21 +316,42 @@ class BaselineBloc extends Bloc<BaselineEvent, BaselineState> {
 
     emit(const BaselineLoading());
 
+    // Essential: Sewa, Rumah Tangga, Transport, Asuransi, Pajak, Kesehatan, Pendidikan
+    final essentialCost = currentState.rent + currentState.household +
+        currentState.transportation + currentState.insurance +
+        currentState.incomeTax + currentState.propertyTax +
+        currentState.healthcare + currentState.education;
+
+    // Optional: Kesenangan, Rekreasi, Hadiah, Maintenance, Pegawai RT, Club, Sosial, Lainnya
+    final optionalCost = currentState.personalPleasure + currentState.familyRecreation +
+        currentState.gifts + currentState.maintenance +
+        currentState.householdStaff + currentState.membership +
+        currentState.socialContribution + currentState.other;
+
     final result = await saveBaseline(SaveBaselineParams(
-      essentialCost: currentState.housing + currentState.food + currentState.transport + currentState.health + currentState.utilities,
-      optionalCost: currentState.other,
-      safetyBuffer: currentState.debtPayments,
+      essentialCost: essentialCost,
+      optionalCost: optionalCost,
+      safetyBuffer: 0,
     ));
 
     await result.fold(
       (failure) async {
         emit(BaselineEditing(
-          housing: currentState.housing,
-          food: currentState.food,
-          transport: currentState.transport,
-          health: currentState.health,
-          utilities: currentState.utilities,
-          debtPayments: currentState.debtPayments,
+          rent: currentState.rent,
+          household: currentState.household,
+          transportation: currentState.transportation,
+          insurance: currentState.insurance,
+          incomeTax: currentState.incomeTax,
+          propertyTax: currentState.propertyTax,
+          personalPleasure: currentState.personalPleasure,
+          familyRecreation: currentState.familyRecreation,
+          gifts: currentState.gifts,
+          education: currentState.education,
+          maintenance: currentState.maintenance,
+          householdStaff: currentState.householdStaff,
+          membership: currentState.membership,
+          healthcare: currentState.healthcare,
+          socialContribution: currentState.socialContribution,
           other: currentState.other,
         ));
       },

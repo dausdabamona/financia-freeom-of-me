@@ -169,16 +169,36 @@ class _AssetTile extends StatelessWidget {
 
   IconData _getAssetIcon() {
     switch (asset.type) {
+      case AssetType.cash:
+        return Icons.money;
+      case AssetType.bankSavings:
+        return Icons.account_balance;
       case AssetType.property:
         return Icons.home;
+      case AssetType.businessOwnership:
+        return Icons.business;
+      case AssetType.deposit:
+        return Icons.lock;
+      case AssetType.mutualFund:
+        return Icons.pie_chart;
+      case AssetType.gold:
+        return Icons.diamond;
+      case AssetType.stock:
+        return Icons.trending_up;
+      case AssetType.insuranceCash:
+        return Icons.shield;
+      case AssetType.receivable:
+        return Icons.request_quote;
       case AssetType.vehicle:
         return Icons.directions_car;
-      case AssetType.investment:
-        return Icons.trending_up;
-      case AssetType.savings:
-        return Icons.savings;
-      case AssetType.other:
+      case AssetType.collectible:
+        return Icons.palette;
+      case AssetType.furniture:
+        return Icons.chair;
+      case AssetType.valuables:
         return Icons.inventory;
+      case AssetType.other:
+        return Icons.more_horiz;
     }
   }
 
@@ -242,7 +262,7 @@ class _AddAssetFormState extends State<_AddAssetForm> {
   final _nameController = TextEditingController();
   final _valueController = TextEditingController();
   final _incomeController = TextEditingController();
-  AssetType _selectedType = AssetType.savings;
+  AssetType _selectedType = AssetType.bankSavings;
 
   @override
   void dispose() {
@@ -268,7 +288,7 @@ class _AddAssetFormState extends State<_AddAssetForm> {
       _nameController.clear();
       _valueController.clear();
       _incomeController.clear();
-      setState(() => _selectedType = AssetType.savings);
+      setState(() => _selectedType = AssetType.bankSavings);
     }
   }
 
@@ -386,14 +406,20 @@ class _LiabilityTile extends StatelessWidget {
     switch (liability.type) {
       case LiabilityType.mortgage:
         return Icons.home;
-      case LiabilityType.carLoan:
+      case LiabilityType.propertyLoan:
+        return Icons.apartment;
+      case LiabilityType.vehicleLoan:
         return Icons.directions_car;
       case LiabilityType.creditCard:
         return Icons.credit_card;
-      case LiabilityType.personalLoan:
-        return Icons.money;
-      case LiabilityType.other:
+      case LiabilityType.schoolLoan:
+        return Icons.school;
+      case LiabilityType.unpaidContract:
+        return Icons.description;
+      case LiabilityType.taxPayable:
         return Icons.receipt;
+      case LiabilityType.other:
+        return Icons.more_horiz;
     }
   }
 
@@ -460,7 +486,7 @@ class _AddLiabilityFormState extends State<_AddLiabilityForm> {
   final _balanceController = TextEditingController();
   final _paymentController = TextEditingController();
   final _interestController = TextEditingController();
-  LiabilityType _selectedType = LiabilityType.personalLoan;
+  LiabilityType _selectedType = LiabilityType.other;
 
   @override
   void dispose() {
@@ -487,7 +513,7 @@ class _AddLiabilityFormState extends State<_AddLiabilityForm> {
       _balanceController.clear();
       _paymentController.clear();
       _interestController.clear();
-      setState(() => _selectedType = LiabilityType.personalLoan);
+      setState(() => _selectedType = LiabilityType.other);
     }
   }
 

@@ -43,7 +43,13 @@ class Transaction extends Equatable {
   /// Is this a passive income transaction
   bool get isPassiveIncome {
     if (type != TransactionType.income) return false;
-    return ['investment', 'rental', 'dividend', 'interest'].contains(category);
+    return [
+      'interest_dividend',
+      'asset_sale',
+      'rental',
+      'royalty',
+      'pension',
+    ].contains(category);
   }
 
   /// Is this a salary income
@@ -56,13 +62,14 @@ class Transaction extends Equatable {
   bool get isEssentialExpense {
     if (type != TransactionType.expense) return false;
     return [
-      'housing',
-      'utilities',
-      'groceries',
+      'rent',
+      'household',
       'transportation',
-      'healthcare',
       'insurance',
-      'debt_payment',
+      'income_tax',
+      'property_tax',
+      'healthcare',
+      'education',
     ].contains(category);
   }
 

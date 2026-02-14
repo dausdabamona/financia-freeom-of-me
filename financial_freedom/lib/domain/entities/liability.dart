@@ -1,12 +1,15 @@
 import 'package:equatable/equatable.dart';
 
-/// Liability types
+/// Liability types - berdasarkan format Balance Sheet
 enum LiabilityType {
-  mortgage,
-  carLoan,
-  creditCard,
-  personalLoan,
-  other,
+  mortgage,          // 1. KPR
+  propertyLoan,      // 2. Kredit Rumah 2, 3, dst
+  vehicleLoan,       // 3. Kredit Mobil / Motor
+  creditCard,        // 4. Credit Card
+  schoolLoan,        // 5. Pinjaman Sekolah
+  unpaidContract,    // 6. Kontrak yang belum dibayar
+  taxPayable,        // 7. Pajak
+  other,             // 8. Lain-lain
 }
 
 extension LiabilityTypeX on LiabilityType {
@@ -14,12 +17,18 @@ extension LiabilityTypeX on LiabilityType {
     switch (this) {
       case LiabilityType.mortgage:
         return 'KPR';
-      case LiabilityType.carLoan:
-        return 'Kredit Kendaraan';
+      case LiabilityType.propertyLoan:
+        return 'Kredit Rumah Lain';
+      case LiabilityType.vehicleLoan:
+        return 'Kredit Mobil / Motor';
       case LiabilityType.creditCard:
         return 'Kartu Kredit';
-      case LiabilityType.personalLoan:
-        return 'Pinjaman Pribadi';
+      case LiabilityType.schoolLoan:
+        return 'Pinjaman Sekolah';
+      case LiabilityType.unpaidContract:
+        return 'Kontrak Belum Dibayar';
+      case LiabilityType.taxPayable:
+        return 'Pajak';
       case LiabilityType.other:
         return 'Lainnya';
     }
