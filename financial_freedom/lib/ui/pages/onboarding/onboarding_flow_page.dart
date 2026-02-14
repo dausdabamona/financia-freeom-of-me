@@ -24,7 +24,7 @@ class OnboardingFlowPage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<OnboardingBloc>(
-          create: (context) => getIt<OnboardingBloc>(),
+          create: (context) => getIt<OnboardingBloc>()..add(const StartOnboardingEvent()),
         ),
         BlocProvider<AccountSetupBloc>(
           create: (context) => getIt<AccountSetupBloc>()..add(const LoadAccountsEvent()),
