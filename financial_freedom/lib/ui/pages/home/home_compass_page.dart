@@ -32,43 +32,41 @@ class HomeCompassPage extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const ExitVisionPage(),
-            ),
-          );
-        },
-        icon: const Icon(Icons.timeline),
-        label: const Text('Exit Simulator'),
-        backgroundColor: Colors.teal,
-      ),
-      body: BlocBuilder<CompassBloc, CompassState>(
-        builder: (context, state) {
-          if (state is CompassInitial || state is CompassLoading) {
-            return const _LoadingView();
-          }
+      body: const HomeCompassBody(),
+    );
+  }
+}
 
-          if (state is CompassError) {
-            return _ErrorView(message: state.message);
-          }
+/// Body-only widget for embedding in MainShellPage
+class HomeCompassBody extends StatelessWidget {
+  const HomeCompassBody({super.key});
 
-          if (state is CompassEmpty) {
-            return _EmptyView(message: state.message);
-          }
-
-          if (state is CompassLoaded) {
-            return _LoadedView(
-              snapshot: state.snapshot,
-              compass: state.compass,
-              isFirstTimeUser: state.isFirstTimeUser,
-            );
-          }
-
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<CompassBloc, CompassState>(
+      builder: (context, state) {
+        if (state is CompassInitial || state is CompassLoading) {
           return const _LoadingView();
-        },
-      ),
+        }
+
+        if (state is CompassError) {
+          return _ErrorView(message: state.message);
+        }
+
+        if (state is CompassEmpty) {
+          return _EmptyView(message: state.message);
+        }
+
+        if (state is CompassLoaded) {
+          return _LoadedView(
+            snapshot: state.snapshot,
+            compass: state.compass,
+            isFirstTimeUser: state.isFirstTimeUser,
+          );
+        }
+
+        return const _LoadingView();
+      },
     );
   }
 }
@@ -224,7 +222,7 @@ class _LoadedView extends StatelessWidget {
             // Exit Simulator Card
             _ExitSimulatorCard(),
 
-            const SizedBox(height: 80), // Space for FAB
+            const SizedBox(height: 16),
           ],
         ),
       ),

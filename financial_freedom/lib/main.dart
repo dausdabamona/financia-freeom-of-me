@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:financial_freedom/core/di/injection.dart';
+import 'package:financial_freedom/core/navigation/app_state.dart';
 import 'package:financial_freedom/domain/repositories/account_repository.dart';
-import 'package:financial_freedom/ui/bloc/compass/compass.dart';
-import 'package:financial_freedom/ui/pages/home/home_compass_page.dart';
+import 'package:financial_freedom/ui/pages/shell/main_shell_page.dart';
 import 'package:financial_freedom/ui/pages/onboarding/onboarding_flow_page.dart';
 
 void main() async {
@@ -62,6 +61,7 @@ class _AppEntryPointState extends State<AppEntryPoint> {
   @override
   void initState() {
     super.initState();
+    resetAppToWelcome = _resetToWelcome;
     _checkFirstTimeUser();
   }
 
@@ -84,6 +84,12 @@ class _AppEntryPointState extends State<AppEntryPoint> {
         });
       },
     );
+  }
+
+  void _resetToWelcome() {
+    setState(() {
+      _isFirstTimeUser = true;
+    });
   }
 
   void _navigateToOnboarding() async {
@@ -122,10 +128,7 @@ class _AppEntryPointState extends State<AppEntryPoint> {
       return _WelcomeScreen(onStartOnboarding: _navigateToOnboarding);
     }
 
-    return BlocProvider<CompassBloc>(
-      create: (context) => getIt<CompassBloc>()..add(const LoadCompassEvent()),
-      child: const HomeCompassPage(),
-    );
+    return const MainShellPage();
   }
 }
 
@@ -139,12 +142,13 @@ class _WelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Spacer(),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 32),
 
               // Logo/Icon
               Container(
@@ -206,7 +210,7 @@ class _WelcomeScreen extends StatelessWidget {
                 ),
               ),
 
-              const Spacer(),
+              const SizedBox(height: 32),
 
               // What to expect
               Text(
@@ -260,7 +264,8 @@ class _WelcomeScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 16),
-            ],
+              ],
+            ),
           ),
         ),
       ),
