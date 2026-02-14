@@ -33,6 +33,9 @@ jobs:
         channel: 'stable'
         cache: true
 
+    - name: Flutter doctor
+      run: flutter doctor -v
+
     - name: Create local.properties
       working-directory: financial_freedom/android
       run: |
@@ -45,14 +48,15 @@ jobs:
       working-directory: financial_freedom
       run: flutter pub get
 
-    - name: Generate code (Drift database)
+    - name: Generate Drift database code
       working-directory: financial_freedom
-      run: dart run build_runner build --delete-conflicting-outputs
-
-    - name: Analyze code
-      working-directory: financial_freedom
-      run: flutter analyze --no-fatal-infos
-      continue-on-error: true
+      run: |
+        echo "--- Running build_runner ---"
+        dart run build_runner build --delete-conflicting-outputs --verbose
+        echo "--- Verifying generated files ---"
+        find lib -name "*.g.dart" -type f | head -20
+        echo "--- Generated files count ---"
+        find lib -name "*.g.dart" -type f | wc -l
 
     - name: Run tests
       working-directory: financial_freedom
@@ -67,11 +71,13 @@ jobs:
       working-directory: financial_freedom
       run: flutter build apk --debug
 
-    - name: Rename APKs
+    - name: Prepare artifacts
       run: |
         mkdir -p artifacts
         cp financial_freedom/build/app/outputs/flutter-apk/app-release.apk artifacts/financial-freedom-release.apk
         cp financial_freedom/build/app/outputs/flutter-apk/app-debug.apk artifacts/financial-freedom-debug.apk
+        echo "--- APK files ---"
+        ls -lh artifacts/
 
     - name: Upload Release APK
       uses: actions/upload-artifact@v4
