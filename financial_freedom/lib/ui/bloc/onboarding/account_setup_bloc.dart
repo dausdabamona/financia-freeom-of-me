@@ -64,10 +64,16 @@ class AccountSetupInitial extends AccountSetupState {
 }
 
 class AccountSetupLoading extends AccountSetupState {
-  const AccountSetupLoading();
+  @override
+  final List<Account> accounts;
+
+  const AccountSetupLoading({this.accounts = const []});
 
   @override
   bool get isLoading => true;
+
+  @override
+  List<Object?> get props => [accounts];
 }
 
 class AccountSetupReady extends AccountSetupState {
@@ -142,7 +148,7 @@ class AccountSetupBloc extends Bloc<AccountSetupEvent, AccountSetupState> {
     final currentState = state;
     if (currentState is! AccountSetupReady) return;
 
-    emit(const AccountSetupLoading());
+    emit(AccountSetupLoading(accounts: currentState.accounts));
 
     final result = await saveAccount(SaveAccountParams(
       name: event.name,
@@ -179,7 +185,7 @@ class AccountSetupBloc extends Bloc<AccountSetupEvent, AccountSetupState> {
     final currentState = state;
     if (currentState is! AccountSetupReady) return;
 
-    emit(const AccountSetupLoading());
+    emit(AccountSetupLoading(accounts: currentState.accounts));
 
     final result = await accountRepository.deleteAccount(event.accountId);
 

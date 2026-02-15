@@ -18,7 +18,19 @@ class AccountSetupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AccountSetupBloc, AccountSetupState>(
+    return BlocConsumer<AccountSetupBloc, AccountSetupState>(
+      listener: (context, state) {
+        if (state is AccountSetupReady && state.message != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message!)),
+          );
+        }
+        if (state is AccountSetupError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        }
+      },
       builder: (context, state) {
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -58,7 +70,7 @@ class AccountSetupPage extends StatelessWidget {
                   child: const Text('Lanjut ke Pengeluaran Bulanan'),
                 ),
 
-              if (state.accounts.isEmpty)
+              if (state.accounts.isEmpty && !state.isLoading)
                 Text(
                   'Tambahkan minimal satu akun untuk melanjutkan',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
