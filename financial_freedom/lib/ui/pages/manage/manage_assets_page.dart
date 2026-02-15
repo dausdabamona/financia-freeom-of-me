@@ -147,16 +147,36 @@ class _AssetTile extends StatelessWidget {
 
   IconData _getAssetIcon() {
     switch (asset.type) {
+      case AssetType.cash:
+        return Icons.money;
+      case AssetType.bankSavings:
+        return Icons.account_balance;
       case AssetType.property:
         return Icons.home;
+      case AssetType.businessOwnership:
+        return Icons.business;
+      case AssetType.deposit:
+        return Icons.lock;
+      case AssetType.mutualFund:
+        return Icons.pie_chart;
+      case AssetType.gold:
+        return Icons.diamond;
+      case AssetType.stock:
+        return Icons.trending_up;
+      case AssetType.insuranceCash:
+        return Icons.shield;
+      case AssetType.receivable:
+        return Icons.request_quote;
       case AssetType.vehicle:
         return Icons.directions_car;
-      case AssetType.investment:
-        return Icons.trending_up;
-      case AssetType.savings:
-        return Icons.savings;
-      case AssetType.other:
+      case AssetType.collectible:
+        return Icons.palette;
+      case AssetType.furniture:
+        return Icons.chair;
+      case AssetType.valuables:
         return Icons.inventory;
+      case AssetType.other:
+        return Icons.more_horiz;
     }
   }
 
@@ -214,7 +234,7 @@ class _AddAssetFormState extends State<_AddAssetForm> {
   final _nameController = TextEditingController();
   final _valueController = TextEditingController();
   final _incomeController = TextEditingController();
-  AssetType _selectedType = AssetType.savings;
+  AssetType _selectedType = AssetType.bankSavings;
 
   @override
   void dispose() {
@@ -239,7 +259,7 @@ class _AddAssetFormState extends State<_AddAssetForm> {
       _nameController.clear();
       _valueController.clear();
       _incomeController.clear();
-      setState(() => _selectedType = AssetType.savings);
+      setState(() => _selectedType = AssetType.bankSavings);
     }
   }
 

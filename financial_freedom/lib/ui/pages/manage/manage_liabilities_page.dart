@@ -149,14 +149,20 @@ class _LiabilityTile extends StatelessWidget {
     switch (liability.type) {
       case LiabilityType.mortgage:
         return Icons.home;
-      case LiabilityType.carLoan:
+      case LiabilityType.propertyLoan:
+        return Icons.apartment;
+      case LiabilityType.vehicleLoan:
         return Icons.directions_car;
       case LiabilityType.creditCard:
         return Icons.credit_card;
-      case LiabilityType.personalLoan:
-        return Icons.money;
-      case LiabilityType.other:
+      case LiabilityType.schoolLoan:
+        return Icons.school;
+      case LiabilityType.unpaidContract:
+        return Icons.description;
+      case LiabilityType.taxPayable:
         return Icons.receipt;
+      case LiabilityType.other:
+        return Icons.more_horiz;
     }
   }
 
@@ -214,7 +220,7 @@ class _AddLiabilityFormState extends State<_AddLiabilityForm> {
   final _balanceController = TextEditingController();
   final _paymentController = TextEditingController();
   final _interestController = TextEditingController();
-  LiabilityType _selectedType = LiabilityType.personalLoan;
+  LiabilityType _selectedType = LiabilityType.other;
 
   @override
   void dispose() {
@@ -240,7 +246,7 @@ class _AddLiabilityFormState extends State<_AddLiabilityForm> {
       _balanceController.clear();
       _paymentController.clear();
       _interestController.clear();
-      setState(() => _selectedType = LiabilityType.personalLoan);
+      setState(() => _selectedType = LiabilityType.other);
     }
   }
 

@@ -5,8 +5,8 @@ import 'package:financial_freedom/ui/widgets/conscious_input.dart';
 
 /// Baseline Setup Page - Step 2 of Reality Entry
 ///
-/// UX Philosophy: Understanding your survival costs
-/// "Berapa yang kamu butuhkan untuk bertahan hidup setiap bulan?"
+/// Format: Income Statement - EXPENSES / Pengeluaran
+/// 16 kategori pengeluaran sesuai laporan keuangan
 class BaselineSetupPage extends StatelessWidget {
   final VoidCallback onContinue;
   final VoidCallback onBack;
@@ -26,12 +26,12 @@ class BaselineSetupPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Conscious header
+              // Header
               _ConsciousHeader(),
 
               const SizedBox(height: 24),
 
-              // Baseline form
+              // Expense form
               _BaselineForm(state: state),
 
               const SizedBox(height: 24),
@@ -104,7 +104,7 @@ class _ConsciousHeader extends StatelessWidget {
             const Icon(Icons.receipt_long, size: 48, color: Colors.orange),
             const SizedBox(height: 16),
             Text(
-              'Berapa yang kamu butuhkan untuk bertahan hidup setiap bulan?',
+              'EXPENSES / Pengeluaran Bulanan',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -112,8 +112,8 @@ class _ConsciousHeader extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Ini bukan tentang gaya hidup ideal.\n'
-              'Ini tentang kebutuhan dasar yang tidak bisa ditawar.',
+              'Isi sesuai pengeluaran rata-rata per bulan.\n'
+              'Kosongkan yang tidak berlaku.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.grey.shade700,
                   ),
@@ -126,7 +126,7 @@ class _ConsciousHeader extends StatelessWidget {
   }
 }
 
-/// Baseline form with all categories
+/// Baseline form with all 16 categories
 class _BaselineForm extends StatefulWidget {
   final BaselineState state;
 
@@ -137,34 +137,70 @@ class _BaselineForm extends StatefulWidget {
 }
 
 class _BaselineFormState extends State<_BaselineForm> {
-  late TextEditingController _housingController;
-  late TextEditingController _foodController;
+  late TextEditingController _rentController;
+  late TextEditingController _householdController;
   late TextEditingController _transportController;
-  late TextEditingController _healthController;
-  late TextEditingController _utilitiesController;
-  late TextEditingController _debtController;
+  late TextEditingController _insuranceController;
+  late TextEditingController _incomeTaxController;
+  late TextEditingController _propertyTaxController;
+  late TextEditingController _personalPleasureController;
+  late TextEditingController _familyRecreationController;
+  late TextEditingController _giftsController;
+  late TextEditingController _educationController;
+  late TextEditingController _maintenanceController;
+  late TextEditingController _householdStaffController;
+  late TextEditingController _membershipController;
+  late TextEditingController _healthcareController;
+  late TextEditingController _socialContributionController;
   late TextEditingController _otherController;
 
   @override
   void initState() {
     super.initState();
-    _housingController = TextEditingController(
-      text: widget.state.housing > 0 ? widget.state.housing.toString() : '',
+    _rentController = TextEditingController(
+      text: widget.state.rent > 0 ? widget.state.rent.toString() : '',
     );
-    _foodController = TextEditingController(
-      text: widget.state.food > 0 ? widget.state.food.toString() : '',
+    _householdController = TextEditingController(
+      text: widget.state.household > 0 ? widget.state.household.toString() : '',
     );
     _transportController = TextEditingController(
-      text: widget.state.transport > 0 ? widget.state.transport.toString() : '',
+      text: widget.state.transportation > 0 ? widget.state.transportation.toString() : '',
     );
-    _healthController = TextEditingController(
-      text: widget.state.health > 0 ? widget.state.health.toString() : '',
+    _insuranceController = TextEditingController(
+      text: widget.state.insurance > 0 ? widget.state.insurance.toString() : '',
     );
-    _utilitiesController = TextEditingController(
-      text: widget.state.utilities > 0 ? widget.state.utilities.toString() : '',
+    _incomeTaxController = TextEditingController(
+      text: widget.state.incomeTax > 0 ? widget.state.incomeTax.toString() : '',
     );
-    _debtController = TextEditingController(
-      text: widget.state.debtPayments > 0 ? widget.state.debtPayments.toString() : '',
+    _propertyTaxController = TextEditingController(
+      text: widget.state.propertyTax > 0 ? widget.state.propertyTax.toString() : '',
+    );
+    _personalPleasureController = TextEditingController(
+      text: widget.state.personalPleasure > 0 ? widget.state.personalPleasure.toString() : '',
+    );
+    _familyRecreationController = TextEditingController(
+      text: widget.state.familyRecreation > 0 ? widget.state.familyRecreation.toString() : '',
+    );
+    _giftsController = TextEditingController(
+      text: widget.state.gifts > 0 ? widget.state.gifts.toString() : '',
+    );
+    _educationController = TextEditingController(
+      text: widget.state.education > 0 ? widget.state.education.toString() : '',
+    );
+    _maintenanceController = TextEditingController(
+      text: widget.state.maintenance > 0 ? widget.state.maintenance.toString() : '',
+    );
+    _householdStaffController = TextEditingController(
+      text: widget.state.householdStaff > 0 ? widget.state.householdStaff.toString() : '',
+    );
+    _membershipController = TextEditingController(
+      text: widget.state.membership > 0 ? widget.state.membership.toString() : '',
+    );
+    _healthcareController = TextEditingController(
+      text: widget.state.healthcare > 0 ? widget.state.healthcare.toString() : '',
+    );
+    _socialContributionController = TextEditingController(
+      text: widget.state.socialContribution > 0 ? widget.state.socialContribution.toString() : '',
     );
     _otherController = TextEditingController(
       text: widget.state.other > 0 ? widget.state.other.toString() : '',
@@ -173,12 +209,21 @@ class _BaselineFormState extends State<_BaselineForm> {
 
   @override
   void dispose() {
-    _housingController.dispose();
-    _foodController.dispose();
+    _rentController.dispose();
+    _householdController.dispose();
     _transportController.dispose();
-    _healthController.dispose();
-    _utilitiesController.dispose();
-    _debtController.dispose();
+    _insuranceController.dispose();
+    _incomeTaxController.dispose();
+    _propertyTaxController.dispose();
+    _personalPleasureController.dispose();
+    _familyRecreationController.dispose();
+    _giftsController.dispose();
+    _educationController.dispose();
+    _maintenanceController.dispose();
+    _householdStaffController.dispose();
+    _membershipController.dispose();
+    _healthcareController.dispose();
+    _socialContributionController.dispose();
     _otherController.dispose();
     super.dispose();
   }
@@ -186,12 +231,21 @@ class _BaselineFormState extends State<_BaselineForm> {
   void _updateBaseline() {
     context.read<BaselineBloc>().add(
           UpdateBaselineEvent(
-            housing: double.tryParse(_housingController.text) ?? 0,
-            food: double.tryParse(_foodController.text) ?? 0,
-            transport: double.tryParse(_transportController.text) ?? 0,
-            health: double.tryParse(_healthController.text) ?? 0,
-            utilities: double.tryParse(_utilitiesController.text) ?? 0,
-            debtPayments: double.tryParse(_debtController.text) ?? 0,
+            rent: double.tryParse(_rentController.text) ?? 0,
+            household: double.tryParse(_householdController.text) ?? 0,
+            transportation: double.tryParse(_transportController.text) ?? 0,
+            insurance: double.tryParse(_insuranceController.text) ?? 0,
+            incomeTax: double.tryParse(_incomeTaxController.text) ?? 0,
+            propertyTax: double.tryParse(_propertyTaxController.text) ?? 0,
+            personalPleasure: double.tryParse(_personalPleasureController.text) ?? 0,
+            familyRecreation: double.tryParse(_familyRecreationController.text) ?? 0,
+            gifts: double.tryParse(_giftsController.text) ?? 0,
+            education: double.tryParse(_educationController.text) ?? 0,
+            maintenance: double.tryParse(_maintenanceController.text) ?? 0,
+            householdStaff: double.tryParse(_householdStaffController.text) ?? 0,
+            membership: double.tryParse(_membershipController.text) ?? 0,
+            healthcare: double.tryParse(_healthcareController.text) ?? 0,
+            socialContribution: double.tryParse(_socialContributionController.text) ?? 0,
             other: double.tryParse(_otherController.text) ?? 0,
           ),
         );
@@ -199,92 +253,175 @@ class _BaselineFormState extends State<_BaselineForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Pengeluaran Bulanan Dasar',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Estimasi rata-rata per bulan. Tidak harus persis.',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey,
-                  ),
-            ),
-            const SizedBox(height: 16),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Essential expenses
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Pengeluaran Wajib',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red.shade700,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Kebutuhan yang tidak bisa ditawar',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                ),
+                const SizedBox(height: 16),
 
-            // Housing
-            _BaselineField(
-              icon: Icons.home,
-              label: 'Tempat Tinggal',
-              hint: 'Kontrakan, kost, cicilan rumah',
-              controller: _housingController,
-              onChanged: _updateBaseline,
+                _BaselineField(
+                  icon: Icons.home,
+                  label: '1. Sewa / Angsuran',
+                  hint: 'Rumah, property, kendaraan, gadget',
+                  controller: _rentController,
+                  onChanged: _updateBaseline,
+                ),
+                _BaselineField(
+                  icon: Icons.kitchen,
+                  label: '2. Biaya Rumah Tangga',
+                  hint: 'Dapur, listrik, air, telepon, internet',
+                  controller: _householdController,
+                  onChanged: _updateBaseline,
+                ),
+                _BaselineField(
+                  icon: Icons.directions_car,
+                  label: '3. Biaya Transport',
+                  hint: 'Bensin, maintenance, pajak kendaraan',
+                  controller: _transportController,
+                  onChanged: _updateBaseline,
+                ),
+                _BaselineField(
+                  icon: Icons.shield,
+                  label: '4. Asuransi',
+                  hint: 'Property, kendaraan, kesehatan, jiwa',
+                  controller: _insuranceController,
+                  onChanged: _updateBaseline,
+                ),
+                _BaselineField(
+                  icon: Icons.receipt,
+                  label: '5. Pajak Penghasilan',
+                  hint: 'PPh 21 / pajak pribadi',
+                  controller: _incomeTaxController,
+                  onChanged: _updateBaseline,
+                ),
+                _BaselineField(
+                  icon: Icons.apartment,
+                  label: '6. Pajak Property / Sewa',
+                  hint: 'PBB, pajak sewa',
+                  controller: _propertyTaxController,
+                  onChanged: _updateBaseline,
+                ),
+                _BaselineField(
+                  icon: Icons.medical_services,
+                  label: '14. Kesehatan',
+                  hint: 'Dokter, obat-obatan, BPJS',
+                  controller: _healthcareController,
+                  onChanged: _updateBaseline,
+                ),
+                _BaselineField(
+                  icon: Icons.school,
+                  label: '10. Pendidikan',
+                  hint: 'Biaya sekolah anak, kursus pribadi',
+                  controller: _educationController,
+                  onChanged: _updateBaseline,
+                ),
+              ],
             ),
-
-            // Food
-            _BaselineField(
-              icon: Icons.restaurant,
-              label: 'Makan & Minum',
-              hint: 'Kebutuhan makan sehari-hari',
-              controller: _foodController,
-              onChanged: _updateBaseline,
-            ),
-
-            // Transport
-            _BaselineField(
-              icon: Icons.directions_car,
-              label: 'Transportasi',
-              hint: 'Bensin, ojol, transport umum',
-              controller: _transportController,
-              onChanged: _updateBaseline,
-            ),
-
-            // Utilities
-            _BaselineField(
-              icon: Icons.bolt,
-              label: 'Utilitas',
-              hint: 'Listrik, air, internet, pulsa',
-              controller: _utilitiesController,
-              onChanged: _updateBaseline,
-            ),
-
-            // Health
-            _BaselineField(
-              icon: Icons.medical_services,
-              label: 'Kesehatan',
-              hint: 'BPJS, obat rutin, asuransi',
-              controller: _healthController,
-              onChanged: _updateBaseline,
-            ),
-
-            // Debt payments
-            _BaselineField(
-              icon: Icons.credit_card,
-              label: 'Cicilan Utang',
-              hint: 'KTA, kartu kredit, pinjaman',
-              controller: _debtController,
-              onChanged: _updateBaseline,
-            ),
-
-            // Other
-            _BaselineField(
-              icon: Icons.more_horiz,
-              label: 'Lainnya',
-              hint: 'Kebutuhan wajib lainnya',
-              controller: _otherController,
-              onChanged: _updateBaseline,
-            ),
-          ],
+          ),
         ),
-      ),
+
+        const SizedBox(height: 16),
+
+        // Optional expenses
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Pengeluaran Opsional',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange.shade700,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Bisa dikurangi jika perlu',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                ),
+                const SizedBox(height: 16),
+
+                _BaselineField(
+                  icon: Icons.spa,
+                  label: '7. Kesenangan Pribadi',
+                  hint: 'Hobi, belanja pribadi',
+                  controller: _personalPleasureController,
+                  onChanged: _updateBaseline,
+                ),
+                _BaselineField(
+                  icon: Icons.family_restroom,
+                  label: '8. Rekreasi Keluarga',
+                  hint: 'Liburan, jalan-jalan keluarga',
+                  controller: _familyRecreationController,
+                  onChanged: _updateBaseline,
+                ),
+                _BaselineField(
+                  icon: Icons.card_giftcard,
+                  label: '9. Hadiah',
+                  hint: 'Hadiah untuk orang lain',
+                  controller: _giftsController,
+                  onChanged: _updateBaseline,
+                ),
+                _BaselineField(
+                  icon: Icons.build,
+                  label: '11. Perbaikan & Maintenance',
+                  hint: 'Perbaikan rumah, servis aset',
+                  controller: _maintenanceController,
+                  onChanged: _updateBaseline,
+                ),
+                _BaselineField(
+                  icon: Icons.people,
+                  label: '12. Gaji Pegawai RT',
+                  hint: 'Supir, baby sitter, pembantu',
+                  controller: _householdStaffController,
+                  onChanged: _updateBaseline,
+                ),
+                _BaselineField(
+                  icon: Icons.card_membership,
+                  label: '13. Keanggotaan Club',
+                  hint: 'Gym, club, membership',
+                  controller: _membershipController,
+                  onChanged: _updateBaseline,
+                ),
+                _BaselineField(
+                  icon: Icons.volunteer_activism,
+                  label: '15. Kontribusi Sosial',
+                  hint: 'Donasi, zakat, sumbangan',
+                  controller: _socialContributionController,
+                  onChanged: _updateBaseline,
+                ),
+                _BaselineField(
+                  icon: Icons.more_horiz,
+                  label: '16. Lainnya',
+                  hint: 'Pengeluaran lain',
+                  controller: _otherController,
+                  onChanged: _updateBaseline,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -351,7 +488,7 @@ class _SummaryCard extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              'Kebutuhan Bulananmu',
+              'Total Pengeluaran Bulanan',
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const SizedBox(height: 8),
