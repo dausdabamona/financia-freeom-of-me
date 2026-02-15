@@ -121,12 +121,15 @@ class AppDatabase extends _$AppDatabase {
 
   /// Opens database with SQLCipher encryption.
   static QueryExecutor _openEncryptedDatabase(File file, String encryptionKey) {
-    return NativeDatabase.createInBackground(
+    // Override MUST happen BEFORE opening the database so drift loads
+    // sqlcipher (libsqlcipher.so) instead of default sqlite3 (libsqlite3.so).
+    // Placing this inside `setup` callback is too late - the native library
+    // is already loaded by then.
+    open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
+
+    return NativeDatabase(
       file,
       setup: (db) {
-        // Load SQLCipher
-        open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
-
         // Set encryption key - PRAGMA key must be first command
         db.execute("PRAGMA key = '$encryptionKey'");
 
